@@ -1,0 +1,12 @@
+{
+  // Cloudflare Workers config — static site served from the Astro build.
+  // The Workers Builds git integration runs `npm run build` then
+  // `npx wrangler deploy`; this file tells that deploy what to publish.
+  "name": "tbwlawfirm",
+  "compatibility_date": "2026-08-01",
+  "assets": {
+    "directory": "./dist",
+    // serve dist/404.html for unknown paths (parity with the live site's 404)
+    "not_found_handling": "404-page"
+  }
+}
