@@ -1,5 +1,8 @@
 # 301s for retired Webflow URLs (Cloudflare Pages honors this file)
 
+# Webflow served the sitemap at /sitemap.xml; Astro emits sitemap-index.xml
+/sitemap.xml /sitemap-index.xml 301
+
 # Webflow starter/template pages — dropped from the port
 /template-pages/* / 301
 /template-pages / 301
