@@ -172,7 +172,88 @@
   }
 
   /* ---------------------------------------------------------------- */
-  /* 5. Lightbox (Webflow w-lightbox links with .w-json payloads)      */
+  /* 5. Blog category filter (replaces Finsweet CMS Filter)            */
+  /*    - toggles is-active / w--redirected-checked on the checkboxes  */
+  /*    - syncs the ?category= query param (live site behaviour)       */
+  /*    - actual show/hide runs in the site's own jQuery code, which   */
+  /*      listens for `input` events on .checkbox-field/.search-field  */
+  /* ---------------------------------------------------------------- */
+  var filterList = document.querySelector('.collection-list-2');
+  if (filterList) {
+    var labels = Array.prototype.slice.call(filterList.querySelectorAll('.checkbox-field'));
+    var searchField = document.querySelector('.search-field');
+    var items = function () {
+      return Array.prototype.slice.call(document.querySelectorAll('.blog-collection-list .blog-item'));
+    };
+    var setChecked = function (label, on) {
+      label.classList.toggle('is-active', on);
+      var box = label.querySelector('.w-checkbox-input');
+      if (box) box.classList.toggle('w--redirected-checked', on);
+      var input = label.querySelector('input[type="checkbox"]');
+      if (input) input.checked = on;
+    };
+    var activeNames = function () {
+      return labels
+        .filter(function (l) { return l.classList.contains('is-active'); })
+        .map(function (l) { return l.textContent.trim(); });
+    };
+    var applyFilter = function () {
+      var active = activeNames();
+      var term = searchField ? searchField.value.trim().toLowerCase() : '';
+      items().forEach(function (item) {
+        var titleEl = item.querySelector('.cms-title');
+        var title = titleEl ? titleEl.textContent : '';
+        var cats = Array.prototype.slice
+          .call(item.querySelectorAll('.blog-category'))
+          .map(function (c) { return c.textContent.trim(); });
+        var catOk =
+          !active.length ||
+          cats.some(function (c) { return active.indexOf(c) !== -1; });
+        var termOk =
+          !term ||
+          title.toLowerCase().indexOf(term) !== -1 ||
+          cats.join(' ').toLowerCase().indexOf(term) !== -1;
+        item.style.display = catOk && termOk ? '' : 'none';
+        // search-term highlight, as the live site's CMS filter rendered it
+        if (window.jQuery && window.jQuery.fn && window.jQuery.fn.unmark && titleEl) {
+          var $t = window.jQuery(titleEl);
+          $t.unmark({
+            done: function () {
+              if (term) $t.mark(term, { element: 'span', className: 'fs-cmsfilter_highlight' });
+            }
+          });
+        }
+      });
+    };
+    var syncUrl = function () {
+      var params = new URLSearchParams(window.location.search);
+      params.delete('category');
+      activeNames().forEach(function (name) { params.append('category', name); });
+      var qs = params.toString();
+      history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+    };
+    labels.forEach(function (label) {
+      label.addEventListener('click', function (e) {
+        // the label's default toggles the hidden input; normalise state ourselves
+        e.preventDefault();
+        setChecked(label, !label.classList.contains('is-active'));
+        syncUrl();
+        applyFilter();
+      });
+    });
+    if (searchField) searchField.addEventListener('input', applyFilter);
+    // deep links: /blog?category=Case+News (also the /category/* redirects)
+    var wanted = new URLSearchParams(window.location.search).getAll('category');
+    if (wanted.length) {
+      labels.forEach(function (label) {
+        if (wanted.indexOf(label.textContent.trim()) !== -1) setChecked(label, true);
+      });
+      applyFilter();
+    }
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* 6. Lightbox (Webflow w-lightbox links with .w-json payloads)      */
   /* ---------------------------------------------------------------- */
   function embedUrlFor(item) {
     var url = item && (item.originalUrl || item.url);

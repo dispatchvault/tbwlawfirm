@@ -29,7 +29,6 @@ const [filtersBefore, filtersAfter] = markCurrent(filtersTpl, Astro.url.pathname
   title="Blog | TBW Law"
   description="Follow the TBW blog, which has content on topics recent case results, the latest news, insights from our team, events, and more."
   bodyClass="body-costom oragne"
-  cmsFilter={true}
 >
   <Nav />
   <Fragment set:html={filtersBefore} />
@@ -57,8 +56,14 @@ const [filtersBefore, filtersAfter] = markCurrent(filtersTpl, Astro.url.pathname
         >
           <div role="list" class="blog-collection-list _3-col w-dyn-items">
             {
+              /* Webflow assigns every card the same w-node id — its #w-node
+                 rule in the shared CSS sets the grid span */
               posts.map((post: any) => (
-                <div role="listitem" class="blog-item w-dyn-item">
+                <div
+                  id="w-node-e294fe6f-c648-9ad6-c692-57e8b6f8c758-2d992f08"
+                  role="listitem"
+                  class="blog-item w-dyn-item"
+                >
                   <a href={`/blog/${post.slug}`} class="blog-image-link _2 w-inline-block">
                     <img
                       src={post.thumbImage}

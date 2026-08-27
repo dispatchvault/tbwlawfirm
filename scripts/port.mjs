@@ -163,6 +163,19 @@ function cleanDom($) {
   $('.w-dropdown-list, .w-dropdown-toggle').removeClass('w--open');
   $('.w-dropdown-toggle').attr('aria-expanded', 'false');
   $('.mb-menu-dropdown').removeClass('visible');
+  // accordions ship closed; the site's own scripts open the first one on load
+  // (the capture froze the runtime's post-open state)
+  $('[data-click]').removeClass('open');
+  $('.acordium-top').each((_, el) => {
+    const $el = $(el);
+    const style = ($el.attr('style') || '')
+      .split(';')
+      .map((s) => s.trim())
+      .filter((d) => d && !d.toLowerCase().startsWith('border-color'))
+      .join('; ');
+    if (style) $el.attr('style', style);
+    else $el.removeAttr('style');
+  });
   return $;
 }
 
