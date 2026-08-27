@@ -124,27 +124,57 @@
   }
 
   function accordionTriggers() {
-    return document.querySelectorAll('[data-click]');
+    return Array.prototype.slice.call(document.querySelectorAll('[data-click]'));
   }
 
-  // initial sync (the site's own scripts may have pre-opened items, e.g. $('#first').click())
-  function syncAccordions(animate) {
+  // Two flavours exist:
+  //  - content accordions (.acordium, data-click="faq*"): the page's own jQuery
+  //    toggles .open reliably (bound once) — heights follow the class.
+  //  - mobile menu/footer accordions (panel is the trigger's next sibling): the
+  //    live site bound the "menu" toggle twice so the .open toggles cancel; the
+  //    Webflow runtime drove those. site.js owns their state via .panel-open.
+  function isClassDriven(t) {
+    return !!t.querySelector('.acordium-bottom');
+  }
+
+  function syncClassDriven(animate) {
     accordionTriggers().forEach(function (t) {
-      var panel = panelFor(t);
-      if (panel) setPanel(panel, t.classList.contains('open'), animate);
+      if (!isClassDriven(t)) return;
+      setPanel(panelFor(t), t.classList.contains('open'), animate);
     });
   }
 
-  // the original jQuery code toggles .open on click (with exclusivity by
-  // simulating clicks); re-sync heights after those handlers run
   document.addEventListener('click', function (e) {
     var t = e.target.closest('[data-click]');
     if (!t) return;
-    setTimeout(function () {
-      syncAccordions(true);
-    }, 0);
+    if (isClassDriven(t)) {
+      // let the jQuery handlers finish toggling .open first
+      setTimeout(function () {
+        syncClassDriven(true);
+      }, 0);
+      return;
+    }
+    var panel = panelFor(t);
+    if (!panel) return;
+    var expanding = !t.classList.contains('panel-open');
+    if (expanding) {
+      // exclusivity within the same accordion group, as on the live site
+      accordionTriggers().forEach(function (other) {
+        if (other !== t && other.getAttribute('data-click') === t.getAttribute('data-click')) {
+          other.classList.remove('panel-open');
+          if (!isClassDriven(other)) setPanel(panelFor(other), false, true);
+        }
+      });
+    }
+    t.classList.toggle('panel-open', expanding);
+    setPanel(panel, expanding, true);
   });
-  syncAccordions(false);
+
+  // initial state: everything closed; the pages' own scripts then open the
+  // first content accordion where the live site did ($('#first').click())
+  accordionTriggers().forEach(function (t) {
+    setPanel(panelFor(t), false, false);
+  });
 
   /* ---------------------------------------------------------------- */
   /* 4. Scroll fade-ins                                                */

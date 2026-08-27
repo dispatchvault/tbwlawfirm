@@ -11,7 +11,8 @@ interface Props {
   bodyClass?: string;
 }
 const { title, description, bodyClass = '' } = Astro.props;
-const canonical = new URL(Astro.url.pathname.replace(/\.html$/, ''), Astro.site).href;
+const canonicalPath = Astro.url.pathname.replace(/\.html$/, '').replace(/^\/index$/, '/');
+const canonical = new URL(canonicalPath, Astro.site).href;
 
 const legalService = {
   '@context': 'https://schema.org',

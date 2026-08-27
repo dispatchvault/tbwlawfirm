@@ -20,8 +20,8 @@ html.js .mobile-acordium-trigger + .mobile-acordium__bottom {
   transition: transform 0.3s ease;
 }
 .acordium.open .acordium-arrow,
-.mobile-acordium-trigger.open .footer-acordium__icon,
-[data-click].open .footer-acordium__icon {
+[data-click].open .footer-acordium__icon,
+[data-click].panel-open .footer-acordium__icon {
   transform: rotate(180deg);
 }
 

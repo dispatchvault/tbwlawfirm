@@ -259,7 +259,7 @@ function pageTemplate(file) {
   return { meta, html };
 }
 
-function emitStaticPage(file, outRel, opts = {}) {
+function emitStaticPage(file, outRel) {
   const { meta, html } = pageTemplate(file);
   const depth = outRel.split('/').length - 3; // src/pages/x.astro -> 0
   const up = '../'.repeat(depth + 1);
@@ -272,7 +272,7 @@ import Footer from '${up}components/Footer.astro';
 <Base
   title=${JSON.stringify(meta.title)}
   description=${JSON.stringify(meta.description)}
-  bodyClass=${JSON.stringify(meta.bodyClass)}${opts.cmsFilter ? '\n  cmsFilter={true}' : ''}
+  bodyClass=${JSON.stringify(meta.bodyClass)}
 >
 ${html.trim()}
 </Base>
