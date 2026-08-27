@@ -1,0 +1,98 @@
+---
+// Blog listing, matching the live /blog page: category checkbox filters +
+// search (Finsweet CMS Filter, reads/writes ?category= query params) over a
+// single full list of posts. The live page's Webflow pagination is dropped —
+// the runtime (Finsweet cmsload) merged all pages into one list on live, and
+// this build renders the full list statically.
+// Post data comes from src/lib/blog.ts (local stub now, Supabase later).
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getPosts, categorySlug } from '../../lib/blog';
+import filtersTpl from '../../components/blog/filters.html?raw';
+import newsletterHtml from '../../components/blog/newsletter.html?raw';
+import tailHtml from '../../components/blog/tail.html?raw';
+import { markCurrent } from '../../lib/current';
+
+const posts = (await getPosts())
+  .filter((p) => (p as any).order != null) // mirrors live: unlisted posts stay off the index
+  .sort((a: any, b: any) => a.order - b.order);
+
+// the live page renders the nav twice: once at the top level and once inside
+// the .blog-filters section — keep both for pixel parity
+const [filtersBefore, filtersAfter] = markCurrent(filtersTpl, Astro.url.pathname).split(
+  '<nav-slot></nav-slot>'
+);
+---
+
+<Base
+  title="Blog | TBW Law"
+  description="Follow the TBW blog, which has content on topics recent case results, the latest news, insights from our team, events, and more."
+  bodyClass="body-costom oragne"
+  cmsFilter={true}
+>
+  <Nav />
+  <Fragment set:html={filtersBefore} />
+  <Nav idOffset={5} />
+  <Fragment set:html={filtersAfter} />
+  <section class="section blog-collection">
+    <div class="container__01">
+      <div class="blog-posts-negative-margin">
+        <div class="w-embed">
+          <style is:inline>
+            .collection-list-5 .blog-category:after {
+              content: '|';
+              margin-left: 10px;
+            }
+
+            .collection-list-5 .w-dyn-item:last-child .blog-category:after {
+              content: '';
+            }
+          </style>
+        </div>
+        <div
+          fs-cmsfilter-showquery="true"
+          fs-cmsfilter-element="list"
+          class="blog-collection-list-wrapper w-dyn-list"
+        >
+          <div role="list" class="blog-collection-list _3-col w-dyn-items">
+            {
+              posts.map((post: any) => (
+                <div role="listitem" class="blog-item w-dyn-item">
+                  <a href={`/blog/${post.slug}`} class="blog-image-link _2 w-inline-block">
+                    <img
+                      src={post.thumbImage}
+                      loading="lazy"
+                      alt={post.thumbImageAlt}
+                      sizes={post.thumbImageSizes ?? undefined}
+                      srcset={post.thumbImageSrcset ?? undefined}
+                      class="cms-image margin radius"
+                    />
+                  </a>
+                  <div class="w-dyn-list">
+                    <div role="list" class="collection-list-5 w-dyn-items">
+                      {post.categories.map((cat: string) => (
+                        <div role="listitem" class="w-dyn-item">
+                          <div fs-cmsfilter-field="category" class="blog-category">
+                            {cat}
+                          </div>
+                          <a href={`/category/${categorySlug(cat)}`} class="link-block-5 w-inline-block" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div fs-cmsfilter-field="title" class="cms-title">
+                    {post.title}
+                  </div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <Fragment set:html={newsletterHtml} />
+  <Footer />
+  <Fragment set:html={tailHtml} />
+</Base>

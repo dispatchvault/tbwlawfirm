@@ -1,0 +1,137 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Base
+  title="Privacy Policy | TBW Law"
+  description=""
+  bodyClass="body-costom oragne"
+>
+<div class="top-bar"><div>Call Today for a FREE Consultation! (949) 706-7100</div></div><section class="section header"><div class="container__01"><div class="center-wrapper"><h1 class="h1-heading no-margin">Privacy Policy</h1></div></div></section><section class="section privacy-wrapper"><div class="container__01 privacy"><div class="rich-text privacy w-richtext"><h4>Privacy Policy</h4><p>‍</p><p>Last Updated: 02/01/2025</p><p>At TBW Law, we are dedicated to protecting your privacy. Our policy outlines how we collect, use, share, and manage personal information.Before or during the collection of personal information, we will clearly state the reasons for collecting it.</p><p>We will only collect and use personal information to fulfill the specific purposes we have outlined, or for other related purposes, unless we have received the individual's consent or are required to do so by law.</p><p>Personal information will be retained only for as long as necessary to achieve these specified purposes.</p><p>We will collect personal information through lawful and fair means and, when applicable, with the knowledge or consent of the individual involved.</p><p>The personal information we collect will be relevant to the purposes for which it is intended and, where necessary, should be accurate, complete, and up-to-date.</p><p>We will implement reasonable security measures to protect personal information from loss or theft, as well as from unauthorized access, disclosure, copying, use, or alteration.We will ensure that information regarding our policies and practices for handling personal information is readily available to our customers.</p><p>Protecting the confidentiality of personal information is fundamental to our business, and we are committed to upholding these principles.</p><p>We look forward to assisting with your case. If you have any questions or concerns regarding our website, policies, or data practices, please don’t hesitate to contact us.</p><p>No mobile information will be shared with third parties or affiliates for marketing or promotional purposes. Other data categories, excluding text messaging opt-in data and consent, will not be shared with any third parties.</p><p>‍</p><p>Contact Us</p><p>If you have any questions or concerns about this Privacy Policy or our privacy practices, please contact us at:</p><p>TBW Law Firm<br>1000 Newport Center Dr.Newport Beach CA. 92660<br>(949) 706-7100<br>info@tbwlawfirm.com</p><p>By using the Site, you acknowledge that you have read, understood, and agreed to this Privacy Policy.</p><p>‍</p><p>‍</p></div></div></section><Footer /><Nav /><!-- Google Tag Manager (noscript) -->
+
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- stagger-annimation -->
+<style is:inline>
+  .fade-in-up:nth-child( 2 ) { transition-delay: .2s }
+  .fade-in-up:nth-child( 3 ) { transition-delay: .4s }
+  .fade-in-up:nth-child( 4 ) { transition-delay: .6s }
+  .fade-in-up:nth-child( 5 ) { transition-delay: .8s }
+  .fade-in-up:nth-child( 6 ) { transition-delay: 1.0s }
+  .fade-in-up:nth-child( 7 ) { transition-delay: 1.2s }
+  .fade-in-up:nth-child( 8 ) { transition-delay: 1.4s }
+  .fade-in-up:nth-child( 9 ) { transition-delay: 1.6s }
+  .fade-in-up:nth-child( 10 ) { transition-delay: 1.8s }
+  .fade-in-up:nth-child( 11 ) { transition-delay: 2.0s }
+  .fade-in-up:nth-child( 12 ) { transition-delay: 2.2s }
+  .fade-in-up:nth-child( 13 ) { transition-delay: 2.4s }
+  .fade-in-up:nth-child( 14 ) { transition-delay: 2.6s }
+  
+  @media only screen and (max-width: 992px) {
+    .fade-in-up {
+      transform: none !important;
+    }
+  }
+  @media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+      .fade-in-up {
+        transform: none !important;
+      }
+    }
+  }
+</style>
+<!-- stagger-annimation -->
+
+<script is:inline>
+$('[data-click="acordium-mb"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="acordium-mb"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});
+  
+$('[data-click="acordium-footer"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="acordium-footer"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});  
+</script>
+
+<!--START-Cloneable Custom Code-->
+<script is:inline>
+$('[data-click="menu"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="menu"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});
+</script>
+<!--END-Cloneable Custom Code-->
+
+<!-- [Attributes by Finsweet] Disable scrolling -->
+
+<script is:inline>
+window.onscroll = function() {
+  var topBar = document.querySelector(".top-bar");
+  var bodyHeight = document.body.offsetHeight - window.innerHeight;
+  var scrollPercentage = (document.documentElement.scrollTop / bodyHeight) * 100;
+
+  if (scrollPercentage >= 3) {
+    topBar.classList.remove("out");
+  } else {
+    topBar.classList.add("out");
+  }
+};
+
+var dropdownWrapper = document.querySelector(".dropdown-wrapper");
+var dropdownToggleWrapper = document.querySelector(".dropdown-toggle-wrapper");
+
+dropdownWrapper.addEventListener("mouseout", function() {
+  dropdownToggleWrapper.style.color = "inherit";
+});
+
+</script>
+
+<script is:inline>
+$('.dropdown-wrapper').hover(function(){
+  $('[colour-nav-hover="black"]').addClass('black');
+}, function(){
+  $('[colour-nav-hover="black"]').removeClass('black');
+});
+
+
+
+let menuItems = document.querySelectorAll('[accordion="menu"]');
+let hamburger = document.querySelector('.mb-menu-hamburger');
+let logo = document.querySelector('.logo-svg-embed');
+let turncolorElements = document.querySelectorAll('[turncolor="is-black"]');
+let logoClassAdded = false;
+
+for (let i = 0; i < menuItems.length; i++) {
+  menuItems[i].addEventListener('click', function () {
+    for (let j = 0; j < turncolorElements.length; j++) {
+      turncolorElements[j].classList.toggle('is--black-acordium');
+    }
+  });
+}
+
+</script>
+</Base>

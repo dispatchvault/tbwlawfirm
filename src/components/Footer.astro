@@ -1,0 +1,10 @@
+---
+// Shared site footer, extracted verbatim from the live capture
+// (scripts/port.mjs regenerates footer.html).
+import footerHtml from './footer.html?raw';
+import { markCurrent } from '../lib/current';
+
+const html = markCurrent(footerHtml, Astro.url.pathname);
+---
+
+<Fragment set:html={html} />

@@ -1,0 +1,123 @@
+---
+// Blog post template, matching the live Webflow post layout. Content comes
+// from the blog data layer (src/lib/blog.ts — currently the local JSON stub,
+// later Supabase).
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getPosts } from '../../lib/blog';
+import shareTpl from '../../components/blog/share-buttons.html?raw';
+import tailHtml from '../../components/blog/post-tail.html?raw';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const posts = await getPosts();
+// live template shows the three most recent other posts
+const related = posts.filter((p) => p.slug !== post.slug).slice(0, 3);
+const postUrl = `https://www.tbwlawfirm.com/blog/${post.slug}`;
+const shareHtml = shareTpl.replaceAll('__POST_URL__', postUrl);
+---
+
+<Base title={post.metaTitle} description={post.metaDescription} bodyClass={post.bodyClass}>
+  <Nav />
+  <section class="section blog-article-top">
+    <div class="container__blog">
+      <div class="center-wrapper">
+        <div class="w-embed">
+          <style is:inline>
+            .category-item .blog-category:after {
+              content: '|';
+              margin-left: 10px;
+            }
+
+            .collection-list-4 .category-item:last-child .blog-category:after {
+              content: '';
+            }
+          </style>
+        </div>
+        <div class="category-list margin w-dyn-list">
+          <div role="list" class="collection-list-4 w-dyn-items">
+            {
+              post.categories.map((cat) => (
+                <div role="listitem" class="category-item w-dyn-item">
+                  <div class="blog-category">{cat}</div>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+        <h2 class="h2-heading">{post.title}</h2>
+        <div class="date-wrapper">
+          <div>{post.dateDisplay}</div>
+          <div class="div-block-3"></div>
+          <div>{post.author}</div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section blog-content">
+    <div class="container__blog">
+      {
+        post.heroImage && (
+          <img
+            loading="lazy"
+            src={post.heroImage}
+            alt={post.heroImageAlt}
+            sizes={post.heroImageSizes ?? undefined}
+            srcset={post.heroImageSrcset ?? undefined}
+            class="blog-main-image"
+          />
+        )
+      }
+      <div class="time-links-wrapper">
+        <div class="read-time-wrapper">
+          <img src="/images/Icon-Read-Time.svg" loading="lazy" alt="" class="read-time-icon" />
+          <div class="text-block-6">{post.readTime}</div>
+          <div class="text-block-5">&nbsp;min read</div>
+        </div>
+        <Fragment set:html={shareHtml} />
+      </div>
+      <Fragment set:html={post.bodyHtml} />
+    </div>
+  </section>
+  <section class="section resources padding-small blog-post">
+    <div class="container__01">
+      <div class="resourses-list-wrapper no-margin w-dyn-list">
+        <div role="list" class="resourses-list w-dyn-items">
+          {
+            related.map((rel) => (
+              <div role="listitem" class="resourses-list-item w-dyn-item">
+                <a href={`/blog/${rel.slug}`} class="blog-image-link w-inline-block">
+                  <img
+                    src={rel.heroImage}
+                    loading="lazy"
+                    alt={rel.heroImageAlt}
+                    sizes="(max-width: 767px) 90vw, (max-width: 991px) 80vw, 26vw"
+                    srcset={rel.heroImageSrcset ?? undefined}
+                    class="cms-image"
+                  />
+                </a>
+                <div class="category-list w-dyn-list">
+                  <div role="list" class="collection-list-4 w-dyn-items">
+                    {rel.categories.map((cat) => (
+                      <div role="listitem" class="category-item w-dyn-item">
+                        <div class="blog-category margin">{cat}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div class="cms-title">{rel.title}</div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+  <Footer />
+  <Fragment set:html={tailHtml} />
+</Base>

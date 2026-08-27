@@ -1,0 +1,22 @@
+# 301s for retired Webflow URLs (Cloudflare Pages honors this file)
+
+# Webflow starter/template pages — dropped from the port
+/template-pages/* / 301
+/template-pages / 301
+/template-* / 301
+
+# /get-started is a dead URL on live (returns the Webflow 404 page)
+/get-started /contact-us 301
+
+# Webflow CMS category pages were empty template shells on live; the blog
+# filter handles ?category= deep links client-side (Finsweet CMS Filter)
+/category/recent-news /blog?category=Recent+News 301
+/category/case-news /blog?category=Case+News 301
+/category/speaking-engagements /blog?category=Speaking+Engagements 301
+/category/events-sponsorship /blog?category=Events+%26+Sponsorship 301
+/category/education /blog?category=Education 301
+/category/videos /blog?category=Videos 301
+/category/* /blog 301
+
+# Webflow's CMS post URLs used /post/* on the staging domain; belt & braces
+/post/* /blog/:splat 301

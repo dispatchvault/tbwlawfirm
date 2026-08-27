@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.tbwlawfirm.com/sitemap-index.xml

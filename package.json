@@ -1,0 +1,20 @@
+{
+  "name": "tbwlawfirm",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "port": "node scripts/port.mjs",
+    "extract:posts": "node scripts/port.mjs --posts-only"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "astro": "^7.2.8"
+  },
+  "devDependencies": {
+    "cheerio": "^1.2.0"
+  }
+}

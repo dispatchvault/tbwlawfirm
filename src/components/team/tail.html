@@ -1,0 +1,126 @@
+<style>
+  .fade-in-up:nth-child( 2 ) { transition-delay: .2s }
+  .fade-in-up:nth-child( 3 ) { transition-delay: .4s }
+  .fade-in-up:nth-child( 4 ) { transition-delay: .6s }
+  .fade-in-up:nth-child( 5 ) { transition-delay: .8s }
+  .fade-in-up:nth-child( 6 ) { transition-delay: 1.0s }
+  .fade-in-up:nth-child( 7 ) { transition-delay: 1.2s }
+  .fade-in-up:nth-child( 8 ) { transition-delay: 1.4s }
+  .fade-in-up:nth-child( 9 ) { transition-delay: 1.6s }
+  .fade-in-up:nth-child( 10 ) { transition-delay: 1.8s }
+  .fade-in-up:nth-child( 11 ) { transition-delay: 2.0s }
+  .fade-in-up:nth-child( 12 ) { transition-delay: 2.2s }
+  .fade-in-up:nth-child( 13 ) { transition-delay: 2.4s }
+  .fade-in-up:nth-child( 14 ) { transition-delay: 2.6s }
+  
+  @media only screen and (max-width: 992px) {
+    .fade-in-up {
+      transform: none !important;
+    }
+  }
+  @media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+      .fade-in-up {
+        transform: none !important;
+      }
+    }
+  }
+</style>
+<script>
+$('[data-click="acordium-mb"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="acordium-mb"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});
+  
+$('[data-click="acordium-footer"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="acordium-footer"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});  
+</script>
+<script>
+$('[data-click="menu"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="menu"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});
+</script>
+<script>
+  function updateTeamsHeaderHeight() {
+    const teamsHeaderItem = document.querySelector('.teams_header-item.desktop');
+    if (teamsHeaderItem) {
+      const height = teamsHeaderItem.offsetHeight;
+      document.documentElement.style.setProperty('--teams-header-item-height', `${height}px`);
+    }
+  }
+
+  // Run on page load
+  window.addEventListener('load', updateTeamsHeaderHeight);
+
+  // Run on window resize
+  window.addEventListener('resize', updateTeamsHeaderHeight);
+</script>
+<script>
+window.onscroll = function() {
+  var topBar = document.querySelector(".top-bar");
+  var bodyHeight = document.body.offsetHeight - window.innerHeight;
+  var scrollPercentage = (document.documentElement.scrollTop / bodyHeight) * 100;
+
+  if (scrollPercentage >= 3) {
+    topBar.classList.remove("out");
+  } else {
+    topBar.classList.add("out");
+  }
+};
+
+var dropdownWrapper = document.querySelector(".dropdown-wrapper");
+var dropdownToggleWrapper = document.querySelector(".dropdown-toggle-wrapper");
+
+dropdownWrapper.addEventListener("mouseout", function() {
+  dropdownToggleWrapper.style.color = "inherit";
+});
+
+</script>
+<script>
+$('.dropdown-wrapper').hover(function(){
+  $('[colour-nav-hover="black"]').addClass('black');
+}, function(){
+  $('[colour-nav-hover="black"]').removeClass('black');
+});
+
+
+
+let menuItems = document.querySelectorAll('[accordion="menu"]');
+let hamburger = document.querySelector('.mb-menu-hamburger');
+let logo = document.querySelector('.logo-svg-embed');
+let turncolorElements = document.querySelectorAll('[turncolor="is-black"]');
+let logoClassAdded = false;
+
+for (let i = 0; i < menuItems.length; i++) {
+  menuItems[i].addEventListener('click', function () {
+    for (let j = 0; j < turncolorElements.length; j++) {
+      turncolorElements[j].classList.toggle('is--black-acordium');
+    }
+  });
+}
+
+</script>

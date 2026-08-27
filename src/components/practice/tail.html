@@ -1,0 +1,136 @@
+<style>
+  .fade-in-up:nth-child( 2 ) { transition-delay: .2s }
+  .fade-in-up:nth-child( 3 ) { transition-delay: .4s }
+  .fade-in-up:nth-child( 4 ) { transition-delay: .6s }
+  .fade-in-up:nth-child( 5 ) { transition-delay: .8s }
+  .fade-in-up:nth-child( 6 ) { transition-delay: 1.0s }
+  .fade-in-up:nth-child( 7 ) { transition-delay: 1.2s }
+  .fade-in-up:nth-child( 8 ) { transition-delay: 1.4s }
+  .fade-in-up:nth-child( 9 ) { transition-delay: 1.6s }
+  .fade-in-up:nth-child( 10 ) { transition-delay: 1.8s }
+  .fade-in-up:nth-child( 11 ) { transition-delay: 2.0s }
+  .fade-in-up:nth-child( 12 ) { transition-delay: 2.2s }
+  .fade-in-up:nth-child( 13 ) { transition-delay: 2.4s }
+  .fade-in-up:nth-child( 14 ) { transition-delay: 2.6s }
+  
+  @media only screen and (max-width: 992px) {
+    .fade-in-up {
+      transform: none !important;
+    }
+  }
+  @media not all and (min-resolution:.001dpcm) {
+    @supports (-webkit-appearance:none) and (stroke-color:transparent) {
+      .fade-in-up {
+        transform: none !important;
+      }
+    }
+  }
+</style>
+<script>
+$('[data-click="acordium-mb"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="acordium-mb"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});
+  
+$('[data-click="acordium-footer"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="acordium-footer"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});  
+</script>
+<script>
+$('[data-click="menu"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="menu"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});
+</script>
+<script>
+$('[data-click="faq"]').click(function(){
+  if(!$(this).is('.open')){
+    $('[data-click="faq"].open').each((i, item)=>{
+      item.click();
+    });
+    $(this).addClass('open');    
+  }
+  else{
+    $(this).removeClass('open');
+  }
+});
+/* open 1st acordium */
+$('#first').click();
+
+/* default image*/
+$('.acordium-wrapper').each(function() {
+    $(this).on('click', '.acordium', function(){
+        setTimeout(() => {
+            var classFound = false;
+            $(this).each(function() {
+                if ($(this).hasClass('open')){
+                    classFound = true;
+                }
+            });
+            if(!classFound) {
+                $(this).parents('.flexbox-wrapper').find('.placeholder img').show();
+            } else {
+                $(this).parents('.flexbox-wrapper').find('.placeholder img').hide();
+            }
+        }, "100");
+    });
+});
+</script>
+<script>
+var mySwiper = new Swiper ('#basic-swiper', {
+ 	slidesPerView: "auto",
+  slidesPerGroup: 1,
+  grabCursor:false,
+  a11y: false,
+  spaceBetween: 28,
+  allowTouchMove: false,
+  navigation: {
+  nextEl: '#right-button',
+  prevEl: '#left-button',
+		},
+     breakpoints: {
+      0: { /* when window >=0px - webflow mobile landscape/portriat */
+          slidesPerView: "auto",
+         slidesPerGroup:1,
+        spaceBetween: 28,
+      },
+          480: { /* when window >=0px - webflow mobile landscape/portriat */
+          slidesPerView: "auto",
+         slidesPerGroup:1,
+        spaceBetween: 28,
+      },
+      767: { /* when window >= 767px - webflow tablet */
+            slidesPerView: "auto",
+         slidesPerGroup:1,
+        spaceBetween: 28,
+      },
+      992: { /* when window >= 988px - webflow desktop */
+        slidesPerView: "auto",
+         slidesPerGroup:1,
+        spaceBetween: 28,
+      }
+    },
+      });
+</script>

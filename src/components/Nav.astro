@@ -1,0 +1,25 @@
+---
+// Shared site navigation, extracted verbatim from the live capture
+// (scripts/port.mjs regenerates nav.html). Webflow's current-page markers
+// (aria-current="page" + w--current) are re-applied per URL at build time.
+// `idOffset` shifts the generated w-dropdown-toggle-N/w-dropdown-list-N ids so
+// a page can embed the nav twice without duplicate ids (the live /blog page
+// does exactly that).
+import navHtml from './nav.html?raw';
+import { markCurrent } from '../lib/current';
+
+interface Props {
+  idOffset?: number;
+}
+const { idOffset = 0 } = Astro.props;
+
+let html = markCurrent(navHtml, Astro.url.pathname);
+if (idOffset) {
+  html = html.replace(
+    /w-dropdown-(toggle|list)-(\d+)/g,
+    (_m, kind, n) => `w-dropdown-${kind}-${Number(n) + idOffset}`
+  );
+}
+---
+
+<Fragment set:html={html} />

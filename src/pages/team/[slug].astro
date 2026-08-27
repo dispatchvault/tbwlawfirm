@@ -1,0 +1,23 @@
+---
+// Team-member template. The five attorney/staff pages share one Webflow
+// template; per-member content lives in src/data/team.json (extracted from the
+// capture by scripts/port.mjs).
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import data from '../../data/team.json';
+import tailHtml from '../../components/team/tail.html?raw';
+
+export function getStaticPaths() {
+  return Object.keys(data).map((slug) => ({ params: { slug } }));
+}
+
+const entry = data[Astro.params.slug];
+---
+
+<Base title={entry.title} description={entry.description} bodyClass={entry.bodyClass}>
+  <Nav />
+  <Fragment set:html={entry.html} />
+  <Footer />
+  <Fragment set:html={tailHtml} />
+</Base>
