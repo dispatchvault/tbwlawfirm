@@ -142,7 +142,14 @@ function cleanDom($) {
   });
 
   // ---- swiper de-init (runtime re-initialises from pristine markup)
-  $('[class*="swiper-slide-duplicate"]').remove();
+  // Remove only true loop clones (exact swiper-slide-duplicate token). The
+  // ORIGINAL slides adjacent to clones carry swiper-slide-duplicate-prev/-next
+  // and must be kept — a substring match here silently dropped the last slide
+  // of the homepage case swiper (Kim V. Tillery) and cards swiper (Rideshare).
+  $('.swiper-slide').each((_, el) => {
+    const cls = ($(el).attr('class') || '').split(/\s+/);
+    if (cls.includes('swiper-slide-duplicate')) $(el).remove();
+  });
   $('[class*="swiper"]').each((_, el) => {
     const $el = $(el);
     const cls = ($el.attr('class') || '')

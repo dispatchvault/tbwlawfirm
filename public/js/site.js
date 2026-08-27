@@ -151,6 +151,7 @@
       // let the jQuery handlers finish toggling .open first
       setTimeout(function () {
         syncClassDriven(true);
+        syncAccordionImages();
       }, 0);
       return;
     }
@@ -170,11 +171,33 @@
     setPanel(panel, expanding, true);
   });
 
-  // initial state: everything closed; the pages' own scripts then open the
-  // first content accordion where the live site did ($('#first').click())
+  // initial state: sibling-driven panels closed; class-driven panels follow
+  // .open — the pages' inline scripts run before site.js and may already have
+  // opened the first content accordion ($('#first').click()), so forcing
+  // everything to 0 here would undo that.
   accordionTriggers().forEach(function (t) {
-    setPanel(panelFor(t), false, false);
+    setPanel(panelFor(t), isClassDriven(t) && t.classList.contains('open'), false);
   });
+
+  // The Webflow IX2 runtime applied `display: block` inline on the accordion
+  // placeholder image, which is what makes it visible below 992px (the
+  // stylesheet hides it there). Reproduce that applied state.
+  document.querySelectorAll('.acordium-image-wrapper.placeholder').forEach(function (el) {
+    el.style.display = 'block';
+  });
+
+  // IX2 also kept only the OPEN accordion's in-panel image visible
+  // (display:none/opacity:0 inline on the rest) — the wrappers are absolutely
+  // stacked in the same slot on desktop, so without this the last one in the
+  // DOM paints on top regardless of which accordion is open.
+  function syncAccordionImages() {
+    document.querySelectorAll('.acordium .acordium-image-wrapper').forEach(function (el) {
+      var open = !!el.closest('.acordium.open');
+      el.style.display = open ? 'block' : 'none';
+      el.style.opacity = open ? '1' : '0';
+    });
+  }
+  syncAccordionImages();
 
   /* ---------------------------------------------------------------- */
   /* 4. Scroll fade-ins                                                */

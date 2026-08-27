@@ -8,7 +8,14 @@
  * queries returning the same shapes — nothing else in the site needs to change.
  */
 import postsJson from '../data/posts.json';
+import archiveJson from '../data/posts-archive.json';
 import categoriesJson from '../data/categories.json';
+
+// posts-archive.json holds the six published CMS posts that live pages serve at
+// /blog/<slug> but that never appeared on the live blog index (order: null keeps
+// them unlisted here too). Sourced from the Webflow CMS export, not the crawl,
+// so `npm run extract:posts` never regenerates or clobbers them.
+const allPosts = [...postsJson, ...archiveJson];
 
 export interface BlogPost {
   slug: string;
@@ -33,11 +40,11 @@ export interface BlogPost {
 }
 
 export async function getPosts(): Promise<BlogPost[]> {
-  return postsJson as BlogPost[];
+  return allPosts as BlogPost[];
 }
 
 export async function getPost(slug: string): Promise<BlogPost | undefined> {
-  return (postsJson as BlogPost[]).find((p) => p.slug === slug);
+  return (allPosts as BlogPost[]).find((p) => p.slug === slug);
 }
 
 export async function getCategories(): Promise<string[]> {
