@@ -93,3 +93,17 @@ html.js .mb-menu-dropdown.is-open.visible {
   line-height: 1;
   cursor: pointer;
 }
+
+/* ---- nav "Contact Us" link color (Webflow leftover) ----
+   It is the only real <a> among the nav toggles (the rest are dropdown
+   divs), and no rule covered .inline-link-block, so it rendered browser
+   link-blue. Match the other nav items, style-guide orange on hover. */
+.nav-links-wrapper .inline-link-block,
+.nav-links-wrapper .inline-link-block .dropdown-text {
+  color: #000;
+  transition: color 0.3s ease;
+}
+.nav-links-wrapper .inline-link-block:hover,
+.nav-links-wrapper .inline-link-block:hover .dropdown-text {
+  color: #f26637;
+}
