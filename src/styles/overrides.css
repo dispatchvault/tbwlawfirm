@@ -107,3 +107,13 @@ html.js .mb-menu-dropdown.is-open.visible {
 .nav-links-wrapper .inline-link-block:hover .dropdown-text {
   color: #f26637;
 }
+
+/* ---- swiper default chevrons off (design uses its own arrow SVGs) ----
+   The live site never showed swiper's built-in blue "prev"/"next" glyphs
+   because its swiper-icons font failed to load; our self-hosted bundle
+   loads the font and revealed them. The intended arrows are the Line-*.svg
+   images inside the buttons. */
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  display: none;
+}
