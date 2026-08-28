@@ -68,9 +68,11 @@ const organization = {
     <link rel="preload" href="/fonts/Graphik-Medium.otf" as="font" type="font/otf" crossorigin />
     <link rel="preload" href="/fonts/Graphik-Semibold.otf" as="font" type="font/otf" crossorigin />
     <link rel="preload" href="/fonts/Graphik-Bold.otf" as="font" type="font/otf" crossorigin />
-    <link href={sharedCss} rel="stylesheet" type="text/css" />
+    <!-- vendor CSS first, matching the live site's cascade: the Webflow
+         stylesheet overrides library defaults (e.g. swiper arrow positions) -->
     <link rel="stylesheet" href="/vendor/swiper-bundle.min.css" />
     <link rel="stylesheet" type="text/css" href="/vendor/splide-core.min.css" />
+    <link href={sharedCss} rel="stylesheet" type="text/css" />
     <link href={overridesCss} rel="stylesheet" type="text/css" />
     <link href="/images/ico-ted-wacker.png" rel="shortcut icon" type="image/x-icon" />
     <link href="/images/ico-ted-wacker-bg.png" rel="apple-touch-icon" />
