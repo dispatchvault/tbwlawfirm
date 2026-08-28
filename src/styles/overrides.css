@@ -117,3 +117,27 @@ html.js .mb-menu-dropdown.is-open.visible {
 .swiper-button-next::after {
   display: none;
 }
+
+/* ---- homepage transparent nav (IX2 replacement) ----
+   On the homepage (body.is--white) the live site starts the nav
+   transparent over the hero — white logo, white links, no backdrop —
+   and fades to the solid white nav once the user scrolls. IX2 applied
+   these as inline styles; site.js toggles .nav-at-top instead. */
+.nav-bg,
+.menu-logo_img.color,
+.menu-logo_img.white,
+.mb-menu-hamburger {
+  transition: opacity 0.35s ease, filter 0.35s ease;
+}
+.dropdpwn-toggle-wrapper {
+  transition: color 0.35s ease;
+}
+body.is--white .nav-fixed.nav-at-top .nav-bg { opacity: 0; }
+body.is--white .nav-fixed.nav-at-top .menu-logo_img.color { opacity: 0; }
+body.is--white .nav-fixed.nav-at-top .menu-logo_img.white { opacity: 1; }
+body.is--white .nav-fixed.nav-at-top .mb-menu-hamburger { filter: invert(1); }
+body.is--white .nav-fixed.nav-at-top .dropdpwn-toggle-wrapper,
+body.is--white .nav-fixed.nav-at-top .nav-links-wrapper .inline-link-block,
+body.is--white .nav-fixed.nav-at-top .nav-links-wrapper .inline-link-block .dropdown-text {
+  color: #fff;
+}

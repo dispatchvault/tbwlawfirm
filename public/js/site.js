@@ -200,6 +200,19 @@
   syncAccordionImages();
 
   /* ---------------------------------------------------------------- */
+  /* Homepage transparent nav — IX2 applied these states inline; we key  */
+  /* them off a .nav-at-top class (styles live in overrides.css).        */
+  /* ---------------------------------------------------------------- */
+  var navFixed = document.querySelector('.nav-fixed');
+  if (navFixed && document.body.classList.contains('is--white')) {
+    var syncNavSolidity = function () {
+      navFixed.classList.toggle('nav-at-top', window.scrollY < 60);
+    };
+    window.addEventListener('scroll', syncNavSolidity, { passive: true });
+    syncNavSolidity();
+  }
+
+  /* ---------------------------------------------------------------- */
   /* 4. Scroll fade-ins                                                */
   /* ---------------------------------------------------------------- */
   var fades = document.querySelectorAll('.fade-in-up, .fade-up');
