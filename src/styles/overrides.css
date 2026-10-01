@@ -33,6 +33,23 @@ html.js .mobile-acordium-trigger + .mobile-acordium__bottom {
   opacity: 1;
 }
 
+/* ---- nav dropdown toggle: orange underline slides in, chevron flips ---- */
+/* site.css puts .nav-line at z-index -1, which paints it behind the white
+   .nav-bg; lift it into the toggle's layer */
+.nav-dropdown-toggle .nav-line {
+  z-index: 0;
+  transition: transform 0.3s ease-out;
+}
+.nav-dropdown-toggle.is-open .nav-line {
+  transform: translate(0, -100%);
+}
+.nav-dropdown-toggle .icon-chevron-down {
+  transition: transform 0.3s ease-out;
+}
+.nav-dropdown-toggle.is-open .icon-chevron-down {
+  transform: rotate(180deg);
+}
+
 /* dropdown lists fade in when open */
 .dropdown-list.is-open {
   opacity: 1;
@@ -120,7 +137,8 @@ html.js .mb-menu-dropdown.is-open.visible {
 /* ---- homepage transparent nav ----
    On the homepage (body.is--white) the nav starts transparent over the
    hero — white logo, white links, no backdrop — and fades to the solid
-   white nav once the user scrolls. site.js toggles .nav-at-top. */
+   white nav once the user scrolls, or while the pointer is over the menu
+   or a dropdown is open. site.js toggles .nav-at-top and .nav-solid. */
 .nav-bg,
 .menu-logo_img.color,
 .menu-logo_img.white,
@@ -130,12 +148,12 @@ html.js .mb-menu-dropdown.is-open.visible {
 .dropdpwn-toggle-wrapper {
   transition: color 0.35s ease;
 }
-body.is--white .nav-fixed.nav-at-top .nav-bg { opacity: 0; }
-body.is--white .nav-fixed.nav-at-top .menu-logo_img.color { opacity: 0; }
-body.is--white .nav-fixed.nav-at-top .menu-logo_img.white { opacity: 1; }
-body.is--white .nav-fixed.nav-at-top .mb-menu-hamburger { filter: invert(1); }
-body.is--white .nav-fixed.nav-at-top .dropdpwn-toggle-wrapper,
-body.is--white .nav-fixed.nav-at-top .nav-links-wrapper .inline-link-block,
-body.is--white .nav-fixed.nav-at-top .nav-links-wrapper .inline-link-block .dropdown-text {
+body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .nav-bg { opacity: 0; }
+body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .menu-logo_img.color { opacity: 0; }
+body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .menu-logo_img.white { opacity: 1; }
+body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .mb-menu-hamburger { filter: invert(1); }
+body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .dropdpwn-toggle-wrapper,
+body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .nav-links-wrapper .inline-link-block,
+body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .nav-links-wrapper .inline-link-block .dropdown-text {
   color: #fff;
 }
