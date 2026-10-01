@@ -53,6 +53,31 @@ const organization = {
     <!-- html.js gates all JS-only collapse/hide styles; without JS every
          accordion/menu panel stays expanded and visible -->
     <script is:inline>document.documentElement.classList.add('js');</script>
+    <!-- Ad/analytics tags, carried over from the live site: Google Tag Manager
+         GTM-W849HVFV (the container fires the Meta and TikTok pixels) and
+         GA4 G-0X9LZ52N8W (on live this came from a built-in integration, not
+         the container). They load only on the production domain so preview
+         visits don't reach the agency's reports; add ?tracking=on to any
+         preview URL to test them. -->
+    <script is:inline>
+      (function (w, d) {
+        var host = w.location.hostname;
+        if (host !== 'www.tbwlawfirm.com' && host !== 'tbwlawfirm.com' &&
+            !/[?&]tracking=on\b/.test(w.location.search)) return;
+        w.dataLayer = w.dataLayer || [];
+        w.gtag = function () { w.dataLayer.push(arguments); };
+        w.gtag('js', new Date());
+        w.gtag('config', 'G-0X9LZ52N8W');
+        w.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+        ['https://www.googletagmanager.com/gtag/js?id=G-0X9LZ52N8W',
+         'https://www.googletagmanager.com/gtm.js?id=GTM-W849HVFV'].forEach(function (src) {
+          var s = d.createElement('script');
+          s.async = true;
+          s.src = src;
+          d.head.appendChild(s);
+        });
+      })(window, document);
+    </script>
     <title>{title}</title>
     <meta content={description} name="description" />
     <meta content={title} property="og:title" />
@@ -89,6 +114,8 @@ const organization = {
     <slot name="head" />
   </head>
   <body class={bodyClass}>
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-W849HVFV"
+      height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <slot />
   </body>
 </html>
