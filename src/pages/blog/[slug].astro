@@ -1,5 +1,5 @@
 ---
-// Blog post template, matching the live Webflow post layout. Content comes
+// Blog post template. Content comes
 // from the blog data layer (src/lib/blog.ts — currently the local JSON stub,
 // later Supabase).
 import Base from '../../layouts/Base.astro';
@@ -27,7 +27,7 @@ const shareHtml = shareTpl.replaceAll('__POST_URL__', postUrl);
   <section class="section blog-article-top">
     <div class="container__blog">
       <div class="center-wrapper">
-        <div class="w-embed">
+        <div class="embed">
           <style is:inline>
             .category-item .blog-category:after {
               content: '|';
@@ -39,11 +39,11 @@ const shareHtml = shareTpl.replaceAll('__POST_URL__', postUrl);
             }
           </style>
         </div>
-        <div class="category-list margin w-dyn-list">
-          <div role="list" class="collection-list-4 w-dyn-items">
+        <div class="category-list margin list-wrapper">
+          <div role="list" class="collection-list-4 list-items">
             {
               post.categories.map((cat) => (
-                <div role="listitem" class="category-item w-dyn-item">
+                <div role="listitem" class="category-item list-item">
                   <div class="blog-category">{cat}</div>
                 </div>
               ))
@@ -86,12 +86,12 @@ const shareHtml = shareTpl.replaceAll('__POST_URL__', postUrl);
   </section>
   <section class="section resources padding-small blog-post">
     <div class="container__01">
-      <div class="resourses-list-wrapper no-margin w-dyn-list">
-        <div role="list" class="resourses-list w-dyn-items">
+      <div class="resourses-list-wrapper no-margin list-wrapper">
+        <div role="list" class="resourses-list list-items">
           {
             related.map((rel) => (
-              <div role="listitem" class="resourses-list-item w-dyn-item">
-                <a href={`/blog/${rel.slug}`} class="blog-image-link w-inline-block">
+              <div role="listitem" class="resourses-list-item list-item">
+                <a href={`/blog/${rel.slug}`} class="blog-image-link inline-block">
                   <img
                     src={rel.heroImage}
                     loading="lazy"
@@ -101,10 +101,10 @@ const shareHtml = shareTpl.replaceAll('__POST_URL__', postUrl);
                     class="cms-image"
                   />
                 </a>
-                <div class="category-list w-dyn-list">
-                  <div role="list" class="collection-list-4 w-dyn-items">
+                <div class="category-list list-wrapper">
+                  <div role="list" class="collection-list-4 list-items">
                     {rel.categories.map((cat) => (
-                      <div role="listitem" class="category-item w-dyn-item">
+                      <div role="listitem" class="category-item list-item">
                         <div class="blog-category margin">{cat}</div>
                       </div>
                     ))}

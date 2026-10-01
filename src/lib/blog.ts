@@ -2,8 +2,8 @@
  * Blog data access layer.
  *
  * TODO(supabase): this module is the seam for the future database-backed blog.
- * It is currently backed by a LOCAL STUB: src/data/posts.json, generated from
- * the captured live blog pages by `npm run extract:posts` (scripts/port.mjs).
+ * It is currently backed by a LOCAL STUB: src/data/posts.json (edit it
+ * directly to add or change posts).
  * When the Supabase backend lands, replace the implementations below with
  * queries returning the same shapes — nothing else in the site needs to change.
  */
@@ -13,8 +13,7 @@ import categoriesJson from '../data/categories.json';
 
 // posts-archive.json holds the six published CMS posts that live pages serve at
 // /blog/<slug> but that never appeared on the live blog index (order: null keeps
-// them unlisted here too). Sourced from the Webflow CMS export, not the crawl,
-// so `npm run extract:posts` never regenerates or clobbers them.
+// them unlisted here too).
 const allPosts = [...postsJson, ...archiveJson];
 
 export interface BlogPost {
@@ -51,7 +50,7 @@ export async function getCategories(): Promise<string[]> {
   return categoriesJson as string[];
 }
 
-/** slug used by the retired /category/* Webflow URLs, e.g. "Events & Sponsorship" -> events-sponsorship */
+/** slug used by the retired /category/* URLs, e.g. "Events & Sponsorship" -> events-sponsorship */
 export function categorySlug(name: string): string {
   return name
     .toLowerCase()

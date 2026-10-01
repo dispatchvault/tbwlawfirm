@@ -66,9 +66,9 @@ $('[data-click="menu"]').click(function(){
 </script>
 <script>
 $(document).ready(function() {
-  $(document).on('click', '.pagination-numbers .page-link, .w-pagination-previous, .w-pagination-next', function (){
+  $(document).on('click', '.pagination-numbers .page-link, .pagination-previous, .pagination-next', function (){
     setTimeout(() => {
-      if($('.pagination-numbers .page-link.w--current').text() != '1') {
+      if($('.pagination-numbers .page-link.is-current').text() != '1') {
         $('.blog-collection-list.featured').hide();
       } else {
         $('.blog-collection-list.featured').show();
@@ -79,7 +79,7 @@ $(document).ready(function() {
   $(document).on('input', '.collection-list-2 .checkbox-field, .search-field', function () {
     $('.blog-collection-list.featured').show();
 		var active_blog_categories = [];
-    $('.collection-list-2 .w-dyn-item').each(function() {
+    $('.collection-list-2 .list-item').each(function() {
       if($('label', this).hasClass('is-active')) {
         active_blog_categories.push($(this).find('.checkbox-label').text());
       }
@@ -91,7 +91,7 @@ $(document).ready(function() {
         var cms_category = $('.blog-category', this);
 				var options = {
           "element": "span",
-          "className": "fs-cmsfilter_highlight",
+          "className": "search-highlight",
           "separateWordSearch": false
         };
         cms_title.unmark();
@@ -108,7 +108,7 @@ $(document).ready(function() {
         var cms_category = $('.blog-category', this);
 				var options = {
           "element": "span",
-          "className": "fs-cmsfilter_highlight",
+          "className": "search-highlight",
           "separateWordSearch": false
         };
         cms_title.unmark({
@@ -134,7 +134,7 @@ $(document).ready(function() {
         var cms_category = $('.blog-category', this);
 				var options = {
           "element": "span",
-          "className": "fs-cmsfilter_highlight",
+          "className": "search-highlight",
           "separateWordSearch": false
         };
         cms_title.unmark({
@@ -160,7 +160,7 @@ $(document).ready(function() {
         var cms_category = $('.blog-category', this);
 				var options = {
           "element": "span",
-          "className": "fs-cmsfilter_highlight",
+          "className": "search-highlight",
           "separateWordSearch": false
         };
         cms_title.unmark();

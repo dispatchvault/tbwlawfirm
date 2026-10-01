@@ -1,12 +1,11 @@
 /*
- * overrides.css — small additions on top of the verbatim Webflow stylesheet.
- * Everything here either (a) restores a state the Webflow interaction runtime
- * used to apply inline, or (b) styles the vanilla replacements in /js/site.js.
+ * overrides.css — additions on top of site.css: interaction states driven
+ * by /js/site.js.
  * All collapse/hide rules are gated behind html.js so content stays fully
  * visible when JavaScript is disabled.
  */
 
-/* ---- accordion collapse (runtime used inline height: 0px) ---- */
+/* ---- accordion collapse ---- */
 html.js .acordium .acordium-bottom,
 html.js .mobile-acordium-trigger + .mobile-acordium__bottom {
   height: 0;
@@ -14,7 +13,7 @@ html.js .mobile-acordium-trigger + .mobile-acordium__bottom {
   transition: height 0.3s ease;
 }
 
-/* accordion chevrons rotate when open (runtime used inline transforms) */
+/* accordion chevrons rotate when open  */
 .acordium-arrow,
 .footer-acordium__icon {
   transition: transform 0.3s ease;
@@ -25,7 +24,7 @@ html.js .mobile-acordium-trigger + .mobile-acordium__bottom {
   transform: rotate(180deg);
 }
 
-/* ---- desktop nav dropdown shadow (runtime faded it in) ---- */
+/* ---- desktop nav dropdown shadow ---- */
 .dropdown-shadow {
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -34,18 +33,18 @@ html.js .mobile-acordium-trigger + .mobile-acordium__bottom {
   opacity: 1;
 }
 
-/* dropdown lists fade in like the runtime did */
-.dropdown-list.w--open {
+/* dropdown lists fade in when open */
+.dropdown-list.is-open {
   opacity: 1;
 }
 
-/* ---- mobile menu (runtime set display/height inline) ---- */
+/* ---- mobile menu ---- */
 html.js .mb-menu-dropdown.is-open.visible {
   display: flex;
   flex-direction: column;
 }
 
-/* ---- scroll fade-ins (runtime set the initial hidden state inline) ---- */
+/* ---- scroll fade-ins ---- */
 @media (prefers-reduced-motion: no-preference) {
   html.js .fade-in-up:not(.anim-in) {
     opacity: 0;
@@ -62,7 +61,7 @@ html.js .mb-menu-dropdown.is-open.visible {
   }
 }
 
-/* ---- vanilla lightbox for .w-lightbox video links ---- */
+/* ---- lightbox for .lightbox-link video links ---- */
 .site-lightbox-backdrop {
   position: fixed;
   inset: 0;
@@ -94,7 +93,7 @@ html.js .mb-menu-dropdown.is-open.visible {
   cursor: pointer;
 }
 
-/* ---- nav "Contact Us" link color (Webflow leftover) ----
+/* ---- nav "Contact Us" link color ----
    It is the only real <a> among the nav toggles (the rest are dropdown
    divs), and no rule covered .inline-link-block, so it rendered browser
    link-blue. Match the other nav items, style-guide orange on hover. */
@@ -118,11 +117,10 @@ html.js .mb-menu-dropdown.is-open.visible {
   display: none;
 }
 
-/* ---- homepage transparent nav (IX2 replacement) ----
-   On the homepage (body.is--white) the live site starts the nav
-   transparent over the hero — white logo, white links, no backdrop —
-   and fades to the solid white nav once the user scrolls. IX2 applied
-   these as inline styles; site.js toggles .nav-at-top instead. */
+/* ---- homepage transparent nav ----
+   On the homepage (body.is--white) the nav starts transparent over the
+   hero — white logo, white links, no backdrop — and fades to the solid
+   white nav once the user scrolls. site.js toggles .nav-at-top. */
 .nav-bg,
 .menu-logo_img.color,
 .menu-logo_img.white,

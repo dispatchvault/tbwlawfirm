@@ -1,9 +1,7 @@
 ---
-// Blog listing, matching the live /blog page: category checkbox filters +
-// search (Finsweet CMS Filter, reads/writes ?category= query params) over a
-// single full list of posts. The live page's Webflow pagination is dropped —
-// the runtime (Finsweet cmsload) merged all pages into one list on live, and
-// this build renders the full list statically.
+// Blog listing: category checkbox filters + search (public/js/site.js,
+// reads/writes ?category= query params) over a single full list of posts,
+// rendered statically.
 // Post data comes from src/lib/blog.ts (local stub now, Supabase later).
 import Base from '../../layouts/Base.astro';
 import Nav from '../../components/Nav.astro';
@@ -37,34 +35,34 @@ const [filtersBefore, filtersAfter] = markCurrent(filtersTpl, Astro.url.pathname
   <section class="section blog-collection">
     <div class="container__01">
       <div class="blog-posts-negative-margin">
-        <div class="w-embed">
+        <div class="embed">
           <style is:inline>
             .collection-list-5 .blog-category:after {
               content: '|';
               margin-left: 10px;
             }
 
-            .collection-list-5 .w-dyn-item:last-child .blog-category:after {
+            .collection-list-5 .list-item:last-child .blog-category:after {
               content: '';
             }
           </style>
         </div>
         <div
-          fs-cmsfilter-showquery="true"
-          fs-cmsfilter-element="list"
-          class="blog-collection-list-wrapper w-dyn-list"
+         
+         
+          class="blog-collection-list-wrapper list-wrapper"
         >
-          <div role="list" class="blog-collection-list _3-col w-dyn-items">
+          <div role="list" class="blog-collection-list _3-col list-items">
             {
-              /* Webflow assigns every card the same w-node id — its #w-node
-                 rule in the shared CSS sets the grid span */
+              /* every card shares one id — its #grid-95 rule in site.css
+                 sets the grid span */
               posts.map((post: any) => (
                 <div
-                  id="w-node-e294fe6f-c648-9ad6-c692-57e8b6f8c758-2d992f08"
+                  id="grid-95"
                   role="listitem"
-                  class="blog-item w-dyn-item"
+                  class="blog-item list-item"
                 >
-                  <a href={`/blog/${post.slug}`} class="blog-image-link _2 w-inline-block">
+                  <a href={`/blog/${post.slug}`} class="blog-image-link _2 inline-block">
                     <img
                       src={post.thumbImage}
                       loading="lazy"
@@ -74,19 +72,19 @@ const [filtersBefore, filtersAfter] = markCurrent(filtersTpl, Astro.url.pathname
                       class="cms-image margin radius"
                     />
                   </a>
-                  <div class="w-dyn-list">
-                    <div role="list" class="collection-list-5 w-dyn-items">
+                  <div class="list-wrapper">
+                    <div role="list" class="collection-list-5 list-items">
                       {post.categories.map((cat: string) => (
-                        <div role="listitem" class="w-dyn-item">
-                          <div fs-cmsfilter-field="category" class="blog-category">
+                        <div role="listitem" class="list-item">
+                          <div class="blog-category">
                             {cat}
                           </div>
-                          <a href={`/category/${categorySlug(cat)}`} class="link-block-5 w-inline-block" />
+                          <a href={`/category/${categorySlug(cat)}`} class="link-block-5 inline-block" />
                         </div>
                       ))}
                     </div>
                   </div>
-                  <div fs-cmsfilter-field="title" class="cms-title">
+                  <div class="cms-title">
                     {post.title}
                   </div>
                 </div>

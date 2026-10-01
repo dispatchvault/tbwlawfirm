@@ -12,11 +12,9 @@ export default defineConfig({
   },
   vite: {
     build: {
-      // keep the ported Webflow stylesheet byte-faithful — pixel parity
-      // depends on it and minification buys nothing on a 188KB file
+      // keep site.css readable in the build; minification buys little here
       cssMinify: false,
-      // the Webflow capture inlines images up to a few KB either way; don't
-      // inline ours so /images/* URLs stay stable
+      // don't inline small images so /images/* URLs stay stable
       assetsInlineLimit: 0
     }
   },

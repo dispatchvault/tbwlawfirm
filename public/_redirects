@@ -1,18 +1,19 @@
-# 301s for retired Webflow URLs (Cloudflare Pages honors this file)
+# 301s for retired URLs from the previous site (Cloudflare Workers static
+# assets honor this file)
 
-# Webflow served the sitemap at /sitemap.xml; Astro emits sitemap-index.xml
+# the old sitemap lived at /sitemap.xml; Astro emits sitemap-index.xml
 /sitemap.xml /sitemap-index.xml 301
 
-# Webflow starter/template pages — dropped from the port
+# old starter/template pages — not carried over
 /template-pages/* / 301
 /template-pages / 301
 /template-* / 301
 
-# /get-started is a dead URL on live (returns the Webflow 404 page)
+# /get-started was a dead URL on the old site
 /get-started /contact-us 301
 
-# Webflow CMS category pages were empty template shells on live; the blog
-# filter handles ?category= deep links client-side (Finsweet CMS Filter)
+# old category pages were empty template shells; the blog filter handles
+# ?category= deep links client-side (public/js/site.js)
 /category/recent-news /blog?category=Recent+News 301
 /category/case-news /blog?category=Case+News 301
 /category/speaking-engagements /blog?category=Speaking+Engagements 301
@@ -21,5 +22,5 @@
 /category/videos /blog?category=Videos 301
 /category/* /blog 301
 
-# Webflow's CMS post URLs used /post/* on the staging domain; belt & braces
+# old post URLs used /post/*; belt & braces
 /post/* /blog/:splat 301

@@ -6,15 +6,10 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview",
-    "port": "node scripts/port.mjs",
-    "extract:posts": "node scripts/port.mjs --posts-only"
+    "preview": "astro preview"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
     "astro": "^7.2.8"
-  },
-  "devDependencies": {
-    "cheerio": "^1.2.0"
   }
 }

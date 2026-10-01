@@ -1,15 +1,14 @@
 /**
- * site.js — replaces the Webflow interaction runtime (IX2 + w-dropdown +
- * w-lightbox) with small vanilla equivalents. The site's own custom jQuery
- * code from the original build (menu/accordion .open class toggles, swiper
- * inits, counter-up, top-bar scroll) is kept verbatim in each page's markup;
- * this file provides the pieces Webflow's runtime used to supply:
+ * site.js — site interactions in plain JavaScript. The site's own jQuery code
+ * (menu/accordion .open class toggles, swiper inits, counter-up, top-bar
+ * scroll) lives in each page's markup; this file provides the rest:
  *
  *   1. desktop nav dropdown open/close (hover, 250ms close delay)
  *   2. mobile hamburger menu open/close
  *   3. accordion height animation driven by the existing .open class toggles
  *   4. scroll-into-view fade animations (.fade-in-up / .fade-up)
- *   5. video lightbox for .w-lightbox links (reads the .w-json payload)
+ *   5. blog category filter + search
+ *   6. video lightbox for .lightbox-link links (reads the .lightbox-data payload)
  *
  * All content is fully visible without JavaScript: collapse/hide styles are
  * gated behind the html.js class (set inline in the layout <head>).
@@ -18,18 +17,18 @@
   'use strict';
 
   /* ---------------------------------------------------------------- */
-  /* 1. Webflow-style dropdowns (data-hover + data-delay)              */
+  /* 1. Nav dropdowns (data-hover + data-delay)                        */
   /* ---------------------------------------------------------------- */
-  document.querySelectorAll('.w-dropdown').forEach(function (dd) {
-    var toggle = dd.querySelector('.w-dropdown-toggle');
-    var list = dd.querySelector('.w-dropdown-list');
+  document.querySelectorAll('.nav-dropdown').forEach(function (dd) {
+    var toggle = dd.querySelector('.nav-dropdown-toggle');
+    var list = dd.querySelector('.nav-dropdown-list');
     if (!toggle || !list) return;
     var delay = parseInt(dd.getAttribute('data-delay') || '0', 10) || 0;
     var timer = null;
     var open = function () {
       clearTimeout(timer);
-      toggle.classList.add('w--open');
-      list.classList.add('w--open');
+      toggle.classList.add('is-open');
+      list.classList.add('is-open');
       toggle.setAttribute('aria-expanded', 'true');
       var shadow = document.querySelector('.dropdown-shadow');
       if (shadow) shadow.classList.add('is-visible');
@@ -37,10 +36,10 @@
     var close = function () {
       clearTimeout(timer);
       timer = setTimeout(function () {
-        toggle.classList.remove('w--open');
-        list.classList.remove('w--open');
+        toggle.classList.remove('is-open');
+        list.classList.remove('is-open');
         toggle.setAttribute('aria-expanded', 'false');
-        if (!document.querySelector('.w-dropdown-list.w--open')) {
+        if (!document.querySelector('.nav-dropdown-list.is-open')) {
           var shadow = document.querySelector('.dropdown-shadow');
           if (shadow) shadow.classList.remove('is-visible');
         }
@@ -51,9 +50,9 @@
       dd.addEventListener('mouseleave', close);
     }
     toggle.addEventListener('click', function () {
-      if (toggle.classList.contains('w--open')) {
-        toggle.classList.remove('w--open');
-        list.classList.remove('w--open');
+      if (toggle.classList.contains('is-open')) {
+        toggle.classList.remove('is-open');
+        list.classList.remove('is-open');
         toggle.setAttribute('aria-expanded', 'false');
       } else {
         open();
@@ -131,8 +130,8 @@
   //  - content accordions (.acordium, data-click="faq*"): the page's own jQuery
   //    toggles .open reliably (bound once) — heights follow the class.
   //  - mobile menu/footer accordions (panel is the trigger's next sibling): the
-  //    live site bound the "menu" toggle twice so the .open toggles cancel; the
-  //    Webflow runtime drove those. site.js owns their state via .panel-open.
+  //    inline "menu" handler is bound twice so its .open toggles cancel out;
+  //    site.js owns their state via .panel-open.
   function isClassDriven(t) {
     return !!t.querySelector('.acordium-bottom');
   }
@@ -159,7 +158,7 @@
     if (!panel) return;
     var expanding = !t.classList.contains('panel-open');
     if (expanding) {
-      // exclusivity within the same accordion group, as on the live site
+      // only one panel open per accordion group
       accordionTriggers().forEach(function (other) {
         if (other !== t && other.getAttribute('data-click') === t.getAttribute('data-click')) {
           other.classList.remove('panel-open');
@@ -179,15 +178,14 @@
     setPanel(panelFor(t), isClassDriven(t) && t.classList.contains('open'), false);
   });
 
-  // The Webflow IX2 runtime applied `display: block` inline on the accordion
-  // placeholder image, which is what makes it visible below 992px (the
-  // stylesheet hides it there). Reproduce that applied state.
+  // The accordion placeholder image must be visible below 992px (the
+  // stylesheet hides it there).
   document.querySelectorAll('.acordium-image-wrapper.placeholder').forEach(function (el) {
     el.style.display = 'block';
   });
 
-  // IX2 also kept only the OPEN accordion's in-panel image visible
-  // (display:none/opacity:0 inline on the rest) — the wrappers are absolutely
+  // Only the OPEN accordion's in-panel image is visible (display:none /
+  // opacity:0 on the rest) — the wrappers are absolutely
   // stacked in the same slot on desktop, so without this the last one in the
   // DOM paints on top regardless of which accordion is open.
   function syncAccordionImages() {
@@ -200,8 +198,8 @@
   syncAccordionImages();
 
   /* ---------------------------------------------------------------- */
-  /* Homepage transparent nav — IX2 applied these states inline; we key  */
-  /* them off a .nav-at-top class (styles live in overrides.css).        */
+  /* Homepage transparent nav — keyed off a .nav-at-top class           */
+  /* (styles live in overrides.css).                                    */
   /* ---------------------------------------------------------------- */
   var navFixed = document.querySelector('.nav-fixed');
   if (navFixed && document.body.classList.contains('is--white')) {
@@ -238,9 +236,9 @@
   }
 
   /* ---------------------------------------------------------------- */
-  /* 5. Blog category filter (replaces Finsweet CMS Filter)            */
-  /*    - toggles is-active / w--redirected-checked on the checkboxes  */
-  /*    - syncs the ?category= query param (live site behaviour)       */
+  /* 5. Blog category filter                                           */
+  /*    - toggles is-active / is-checked on the checkboxes             */
+  /*    - syncs the ?category= query param                             */
   /*    - actual show/hide runs in the site's own jQuery code, which   */
   /*      listens for `input` events on .checkbox-field/.search-field  */
   /* ---------------------------------------------------------------- */
@@ -253,8 +251,8 @@
     };
     var setChecked = function (label, on) {
       label.classList.toggle('is-active', on);
-      var box = label.querySelector('.w-checkbox-input');
-      if (box) box.classList.toggle('w--redirected-checked', on);
+      var box = label.querySelector('.checkbox-input');
+      if (box) box.classList.toggle('is-checked', on);
       var input = label.querySelector('input[type="checkbox"]');
       if (input) input.checked = on;
     };
@@ -280,12 +278,12 @@
           title.toLowerCase().indexOf(term) !== -1 ||
           cats.join(' ').toLowerCase().indexOf(term) !== -1;
         item.style.display = catOk && termOk ? '' : 'none';
-        // search-term highlight, as the live site's CMS filter rendered it
+        // highlight the search term in matching titles
         if (window.jQuery && window.jQuery.fn && window.jQuery.fn.unmark && titleEl) {
           var $t = window.jQuery(titleEl);
           $t.unmark({
             done: function () {
-              if (term) $t.mark(term, { element: 'span', className: 'fs-cmsfilter_highlight' });
+              if (term) $t.mark(term, { element: 'span', className: 'search-highlight' });
             }
           });
         }
@@ -319,7 +317,7 @@
   }
 
   /* ---------------------------------------------------------------- */
-  /* 6. Lightbox (Webflow w-lightbox links with .w-json payloads)      */
+  /* 6. Lightbox (.lightbox-link links with .lightbox-data payloads)   */
   /* ---------------------------------------------------------------- */
   function embedUrlFor(item) {
     var url = item && (item.originalUrl || item.url);
@@ -329,9 +327,9 @@
     return url;
   }
 
-  document.querySelectorAll('a.w-lightbox').forEach(function (link) {
+  document.querySelectorAll('a.lightbox-link').forEach(function (link) {
     link.addEventListener('click', function (e) {
-      var script = link.querySelector('script.w-json');
+      var script = link.querySelector('script.lightbox-data');
       if (!script) return;
       var data;
       try {

@@ -2,7 +2,7 @@
 // Base layout: replicates the live www.tbwlawfirm.com <head> (titles and meta
 // descriptions are passed through verbatim from the capture) plus local fonts,
 // vendor libraries and LegalService/Organization structured data.
-import sharedCss from '../styles/tbwlawfirm.shared.css?url';
+import siteCss from '../styles/site.css?url';
 import overridesCss from '../styles/overrides.css?url';
 
 interface Props {
@@ -47,9 +47,8 @@ const organization = {
 ---
 
 <!doctype html>
-<html lang="en" class="w-mod-js w-mod-ix">
+<html lang="en">
   <head>
-    <style is:inline>.wf-force-outline-none[tabindex="-1"]:focus{outline:none;}</style>
     <meta charset="utf-8" />
     <!-- html.js gates all JS-only collapse/hide styles; without JS every
          accordion/menu panel stays expanded and visible -->
@@ -68,11 +67,11 @@ const organization = {
     <link rel="preload" href="/fonts/Graphik-Medium.otf" as="font" type="font/otf" crossorigin />
     <link rel="preload" href="/fonts/Graphik-Semibold.otf" as="font" type="font/otf" crossorigin />
     <link rel="preload" href="/fonts/Graphik-Bold.otf" as="font" type="font/otf" crossorigin />
-    <!-- vendor CSS first, matching the live site's cascade: the Webflow
-         stylesheet overrides library defaults (e.g. swiper arrow positions) -->
+    <!-- vendor CSS first: the site stylesheet overrides library defaults
+         (e.g. swiper arrow positions) -->
     <link rel="stylesheet" href="/vendor/swiper-bundle.min.css" />
     <link rel="stylesheet" type="text/css" href="/vendor/splide-core.min.css" />
-    <link href={sharedCss} rel="stylesheet" type="text/css" />
+    <link href={siteCss} rel="stylesheet" type="text/css" />
     <link href={overridesCss} rel="stylesheet" type="text/css" />
     <link href="/images/ico-ted-wacker.png" rel="shortcut icon" type="image/x-icon" />
     <link href="/images/ico-ted-wacker-bg.png" rel="apple-touch-icon" />
@@ -84,9 +83,8 @@ const organization = {
     <script is:inline src="/vendor/jquery.waypoints.min.js" type="text/javascript"></script>
     <script is:inline src="/vendor/jquery.counterup.min.js" type="text/javascript"></script>
     <script is:inline src="/vendor/jquery.mark.min.js" type="text/javascript"></script>
-    <script is:inline defer src="/vendor/scrolldisable.js"></script>
-    <!-- replaces the Webflow interaction runtime: nav dropdowns, mobile menu,
-         accordions, scroll fade-ins, video lightbox -->
+    <!-- site interactions: nav dropdowns, mobile menu, accordions,
+         scroll fade-ins, video lightbox, blog filter -->
     <script is:inline defer src="/js/site.js"></script>
     <slot name="head" />
   </head>
