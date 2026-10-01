@@ -1,6 +1,0 @@
-# Netlify config for the temporary preview site (tbwlawfirm-preview).
-# Production hosting is Cloudflare Workers (wrangler.jsonc); this exists so
-# Netlify builds publish the Astro output correctly.
-[build]
-  command = "npm run build"
-  publish = "dist"

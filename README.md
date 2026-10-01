@@ -10,7 +10,6 @@ migrated from Webflow. Built and operated by ZINC; governed by
 - **Hosting:** Cloudflare Workers (static assets via `wrangler.jsonc`);
   Workers Builds deploys on every push to `main`
 - **Preview:** https://tbwlawfirm.jzaslaw.workers.dev
-  (temporary viewer: https://tbwlawfirm-preview.netlify.app via `netlify.toml`)
 - **Blog:** git-based content — no database. `src/lib/blog.ts` serves
   `src/data/posts.json` (regenerable from the capture via
   `npm run extract:posts`) plus `src/data/posts-archive.json` (six published
