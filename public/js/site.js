@@ -9,6 +9,8 @@
  *   4. scroll-into-view fade animations (.fade-in-up / .fade-up)
  *   5. blog category filter + search
  *   6. video lightbox for .lightbox-link links (reads the .lightbox-data payload)
+ *   7. website forms: post to /api/forms, inline success/error, form_submit
+ *      dataLayer event, first-touch ad tracking (utm_*, gclid, ...)
  *
  * All content is fully visible without JavaScript: collapse/hide styles are
  * gated behind the html.js class (set inline in the layout <head>).
@@ -380,6 +382,64 @@
         if (ev.target === backdrop || ev.target.classList.contains('site-lightbox-close')) closeLb();
       });
       document.addEventListener('keydown', onKey);
+    });
+  });
+
+  /* ---------------------------------------------------------------- */
+  /* 7. Website forms (ZINC forms protocol)                            */
+  /*    Without JavaScript the forms still post to /api/forms and get  */
+  /*    a plain thank-you page; this adds the inline behaviour.        */
+  /* ---------------------------------------------------------------- */
+  var TRACKING_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'ttclid'];
+  // keep the landing page's ad parameters for the visit (first touch wins)
+  try {
+    var landing = new URLSearchParams(window.location.search);
+    if (!sessionStorage.getItem('tbw_tracking') && TRACKING_KEYS.some(function (k) { return landing.get(k); })) {
+      var t = {};
+      TRACKING_KEYS.forEach(function (k) { if (landing.get(k)) t[k] = landing.get(k); });
+      sessionStorage.setItem('tbw_tracking', JSON.stringify(t));
+    }
+  } catch (_e) {}
+
+  document.querySelectorAll('form[action="/api/forms"]').forEach(function (form) {
+    var wrapper = form.parentElement;
+    var success = wrapper && wrapper.querySelector('.form-success');
+    var failure = wrapper && wrapper.querySelector('.form-error');
+    var button = form.querySelector('[type="submit"]');
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var data = new FormData(form);
+      data.append('_page', window.location.href);
+      data.append('_referrer', document.referrer);
+      try { data.append('_tracking', sessionStorage.getItem('tbw_tracking') || '{}'); } catch (_e) {}
+      var label = button ? button.value : '';
+      if (button) {
+        button.disabled = true;
+        if (button.getAttribute('data-wait')) button.value = button.getAttribute('data-wait');
+      }
+      if (failure) failure.style.display = 'none';
+      fetch(form.action, { method: 'POST', body: data, headers: { Accept: 'application/json' } })
+        .then(function (res) {
+          return res.json().catch(function () { return {}; }).then(function (body) {
+            if (!res.ok || !body.ok) throw new Error(body.message || 'Submission failed');
+          });
+        })
+        .then(function () {
+          form.style.display = 'none';
+          if (success) { success.style.display = 'block'; success.focus(); }
+          window.dataLayer = window.dataLayer || [];
+          window.dataLayer.push({ event: 'form_submit', form_name: data.get('_form'), form_id: form.id });
+        })
+        .catch(function (err) {
+          if (failure) {
+            var msg = failure.querySelector('div');
+            if (msg && err.message && err.message !== 'Submission failed') msg.textContent = err.message;
+            failure.style.display = 'block';
+          }
+        })
+        .then(function () {
+          if (button) { button.disabled = false; button.value = label; }
+        });
     });
   });
 })();

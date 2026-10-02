@@ -4,13 +4,18 @@
   // `npx wrangler deploy`; this file tells that deploy what to publish.
   "name": "tbwlawfirm",
   "compatibility_date": "2026-08-01",
-  // worker/index.js adds HTTP Range (206) support for the hero video, which
-  // Safari/iOS require; only /media/* runs through it
+  // worker/index.js handles the website forms (/api/forms) and adds HTTP
+  // Range (206) support for the hero video, which Safari/iOS require. Only
+  // /api/* and /media/* run through it.
   "main": "worker/index.js",
+  // FORM_NOTIFY_TO / FORM_NOTIFY_FROM / FORM_CONFIRM_FROM and the
+  // RESEND_API_KEY secret are set in the Cloudflare dashboard (this repo is
+  // public); keep_vars stops deploys from wiping them.
+  "keep_vars": true,
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
-    "run_worker_first": ["/media/*"],
+    "run_worker_first": ["/api/*", "/media/*"],
     // serve dist/404.html for unknown paths (parity with the live site's 404)
     "not_found_handling": "404-page"
   }

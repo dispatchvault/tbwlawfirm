@@ -157,3 +157,12 @@ body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .nav-links-wrapper .inline-
 body.is--white .nav-fixed.nav-at-top:not(.nav-solid) .nav-links-wrapper .inline-link-block .dropdown-text {
   color: #fff;
 }
+
+/* ---- form honeypot: off-screen, never seen or tabbed to by people ---- */
+.form-hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
