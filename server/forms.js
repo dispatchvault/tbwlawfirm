@@ -1,34 +1,16 @@
 /**
- * Worker in front of the static assets. wrangler.jsonc routes only /api/* and
- * /media/* through it; every other request is served straight from dist/.
+ * Website forms — POST /api/forms (ZINC forms protocol:
+ * ~/Projects/zinc-tooling/forms-protocol.md). Stores every submission in D1
+ * first, then emails the firm via Resend, then optionally sends the visitor a
+ * confirmation. Called from functions/api/forms.js.
  *
- *   POST /api/forms  website forms (ZINC forms protocol:
- *                    ~/Projects/zinc-tooling/forms-protocol.md): store in D1
- *                    first, then email the firm via Resend, then optionally
- *                    send the visitor a confirmation.
- *   GET  /media/*    adds HTTP Range (206) support. Cloudflare's asset server
- *                    always answers 200 with the whole file, and Safari / iOS
- *                    refuse to play <video> without partial responses.
- *
- * Configuration (Cloudflare dashboard, not this public repo):
- *   RESEND_API_KEY     secret
+ * Configuration (Cloudflare Pages dashboard, encrypted — this repo is public):
+ *   RESEND_API_KEY     Resend API key
  *   FORM_NOTIFY_TO     comma-separated recipients
  *   FORM_NOTIFY_FROM   e.g. "TBW Law Website <website@tbwlawfirm.com>"
  *   FORM_CONFIRM_FROM  optional; when set, the visitor gets a confirmation
  *   DB                 D1 binding (wrangler.jsonc)
  */
-export default {
-  async fetch(request, env) {
-    const url = new URL(request.url);
-    if (url.pathname === '/api/forms') return handleForm(request, env, url);
-    if (url.pathname.startsWith('/media/')) return serveMedia(request, env);
-    return env.ASSETS.fetch(request);
-  }
-};
-
-/* ------------------------------------------------------------------ */
-/* Forms                                                               */
-/* ------------------------------------------------------------------ */
 
 const MAX_BODY = 32 * 1024;
 const RATE_LIMIT = 10; // submissions per IP per 10 minutes
@@ -45,7 +27,8 @@ const FIELD_LABELS = {
 };
 const INTERNAL_FIELDS = new Set(['_form', 'company-website', '_page', '_referrer', '_tracking']);
 
-async function handleForm(request, env, url) {
+export async function handleForm(request, env) {
+  const url = new URL(request.url);
   if (request.method !== 'POST') return new Response('Method not allowed', { status: 405, headers: { Allow: 'POST' } });
   const wantsJson = (request.headers.get('Accept') || '').includes('application/json');
   const origin = request.headers.get('Origin');
@@ -76,9 +59,15 @@ async function handleForm(request, env, url) {
   }
 
   const ip = request.headers.get('CF-Connecting-IP') || '';
-  const recent = await env.DB.prepare(
-    "SELECT COUNT(*) AS n FROM form_submissions WHERE ip = ?1 AND created_at > datetime('now', '-10 minutes')"
-  ).bind(ip).first();
+  let recent;
+  try {
+    recent = await env.DB.prepare(
+      "SELECT COUNT(*) AS n FROM form_submissions WHERE ip = ?1 AND created_at > datetime('now', '-10 minutes')"
+    ).bind(ip).first();
+  } catch (e) {
+    console.error('forms: database unavailable', e);
+    return reply(wantsJson, 500, `Something went wrong. Please ${FIRM_CONTACT}.`);
+  }
   if (recent && recent.n >= RATE_LIMIT) return reply(wantsJson, 429, `Too many submissions. Please ${FIRM_CONTACT}.`);
 
   let tracking = {};
@@ -108,11 +97,15 @@ async function handleForm(request, env, url) {
 
   // stored — from here on nothing can lose the lead; email failures are logged
   const submission = { id, formName, email, name, fields, pageUrl, tracking };
-  if (await sendNotification(env, submission)) {
-    await env.DB.prepare("UPDATE form_submissions SET notified_at = datetime('now') WHERE id = ?1").bind(id).run();
-  }
-  if (env.FORM_CONFIRM_FROM && formName === 'Contact' && (await sendConfirmation(env, submission))) {
-    await env.DB.prepare("UPDATE form_submissions SET confirmed_at = datetime('now') WHERE id = ?1").bind(id).run();
+  try {
+    if (await sendNotification(env, submission)) {
+      await env.DB.prepare("UPDATE form_submissions SET notified_at = datetime('now') WHERE id = ?1").bind(id).run();
+    }
+    if (env.FORM_CONFIRM_FROM && formName === 'Contact' && (await sendConfirmation(env, submission))) {
+      await env.DB.prepare("UPDATE form_submissions SET confirmed_at = datetime('now') WHERE id = ?1").bind(id).run();
+    }
+  } catch (e) {
+    console.error(`forms: post-store step failed for submission ${id}`, e);
   }
   return reply(wantsJson, 200, 'ok');
 }
@@ -199,41 +192,3 @@ function escapeHtml(v) {
   return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 
-/* ------------------------------------------------------------------ */
-/* Media with Range support                                            */
-/* ------------------------------------------------------------------ */
-
-async function serveMedia(request, env) {
-  const res = await env.ASSETS.fetch(request.url, { method: request.method === 'HEAD' ? 'HEAD' : 'GET' });
-  if (res.status !== 200) return res;
-
-  const headers = new Headers(res.headers);
-  headers.set('Accept-Ranges', 'bytes');
-  const range = request.headers.get('Range');
-  if (request.method === 'HEAD' || !range) {
-    return new Response(res.body, { status: 200, headers });
-  }
-
-  const body = await res.arrayBuffer();
-  const size = body.byteLength;
-  const m = /^bytes=(\d*)-(\d*)$/.exec(range.trim());
-  let start;
-  let end;
-  if (m && m[1] !== '') {
-    start = Number(m[1]);
-    end = m[2] !== '' ? Math.min(Number(m[2]), size - 1) : size - 1;
-  } else if (m && m[2] !== '') {
-    // suffix range: the last N bytes
-    start = Math.max(0, size - Number(m[2]));
-    end = size - 1;
-  }
-  if (start === undefined || start > end || start >= size) {
-    headers.set('Content-Range', `bytes */${size}`);
-    headers.delete('Content-Length');
-    return new Response(null, { status: 416, headers });
-  }
-
-  headers.set('Content-Range', `bytes ${start}-${end}/${size}`);
-  headers.set('Content-Length', String(end - start + 1));
-  return new Response(new Uint8Array(body, start, end - start + 1), { status: 206, headers });
-}

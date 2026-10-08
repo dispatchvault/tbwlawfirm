@@ -7,9 +7,17 @@ Built and operated by ZINC; governed by
 ## Stack
 
 - **Framework:** Astro (static output, 47 routes)
-- **Hosting:** Cloudflare Workers (static assets via `wrangler.jsonc`);
-  Workers Builds deploys on every push to `main`
-- **Preview:** https://tbwlawfirm.jzaslaw.workers.dev
+- **Hosting:** Cloudflare Pages project `tbwlawfirm-site`, Git-connected:
+  every push to `main` builds (`npm run build` → `dist/`) and deploys;
+  other branches get preview URLs. `functions/` handles `/api/forms`
+  (website forms → D1 + Resend, see `server/forms.js`) and `/media/*`
+  (Range support for the hero video).
+- **Domain:** DNS stays at GoDaddy (the firm's Microsoft 365 email records
+  are untouched): `www` is a CNAME to `tbwlawfirm-site.pages.dev`, and
+  `tbwlawfirm.com` is forwarded to `https://www.tbwlawfirm.com` by GoDaddy.
+- **Forms:** follow the ZINC forms protocol. Secrets (`RESEND_API_KEY`,
+  `FORM_NOTIFY_TO`, `FORM_NOTIFY_FROM`, `FORM_CONFIRM_FROM`) are encrypted
+  variables in the Pages dashboard; the D1 schema is in `migrations/`.
 - **Blog:** git-based content — no database. `src/lib/blog.ts` serves
   `src/data/posts.json` plus `src/data/posts-archive.json` (six published
   posts that never appeared on the blog index; kept unlisted). Edit the JSON

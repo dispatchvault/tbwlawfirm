@@ -1,22 +1,18 @@
 {
-  // Cloudflare Workers config — static site served from the Astro build.
-  // The Workers Builds git integration runs `npm run build` then
-  // `npx wrangler deploy`; this file tells that deploy what to publish.
-  "name": "tbwlawfirm",
-  "compatibility_date": "2026-08-01",
-  // worker/index.js handles the website forms (/api/forms) and adds HTTP
-  // Range (206) support for the hero video, which Safari/iOS require. Only
-  // /api/* and /media/* run through it.
-  "main": "worker/index.js",
-  // FORM_NOTIFY_TO / FORM_NOTIFY_FROM / FORM_CONFIRM_FROM and the
-  // RESEND_API_KEY secret are set in the Cloudflare dashboard (this repo is
-  // public); keep_vars stops deploys from wiping them.
-  "keep_vars": true,
-  "assets": {
-    "directory": "./dist",
-    "binding": "ASSETS",
-    "run_worker_first": ["/api/*", "/media/*"],
-    // serve dist/404.html for unknown paths (parity with the live site's 404)
-    "not_found_handling": "404-page"
-  }
+  // Cloudflare Pages project (Git integration: build `npm run build`,
+  // output dist/). This file is the source of truth for the project's
+  // non-secret settings.
+  //
+  // Domains: www.tbwlawfirm.com is a CNAME at GoDaddy pointing to the
+  // project's pages.dev address; tbwlawfirm.com is forwarded to www by
+  // GoDaddy. DNS (and the firm's Microsoft 365 email) stays at GoDaddy.
+  //
+  // functions/ handles /api/forms (website forms) and /media/* (Range
+  // support for the hero video); everything else is static from dist/.
+  //
+  // RESEND_API_KEY, FORM_NOTIFY_TO, FORM_NOTIFY_FROM and FORM_CONFIRM_FROM
+  // are encrypted variables in the Pages dashboard (this repo is public).
+  "name": "tbwlawfirm-site",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-08-01"
 }
