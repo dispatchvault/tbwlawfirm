@@ -7,17 +7,19 @@ Built and operated by ZINC; governed by
 ## Stack
 
 - **Framework:** Astro (static output, 47 routes)
-- **Hosting:** Cloudflare Pages project `tbwlawfirm-site`, Git-connected:
-  every push to `main` builds (`npm run build` → `dist/`) and deploys;
-  other branches get preview URLs. `functions/` handles `/api/forms`
-  (website forms → D1 + Resend, see `server/forms.js`) and `/media/*`
-  (Range support for the hero video).
+- **Hosting:** Vercel, project `tbwlawfirm` in ZINC's Pro team. Git-connected:
+  every push to `main` deploys to production; every other branch gets a
+  preview URL. Pages are static; `src/pages/api/forms.js` is the one
+  on-demand route (a Vercel function, see `server/forms.js`). Redirects for
+  retired URLs live in `astro.config.mjs`.
 - **Domain:** DNS stays at GoDaddy (the firm's Microsoft 365 email records
-  are untouched): `www` is a CNAME to `tbwlawfirm-site.pages.dev`, and
-  `tbwlawfirm.com` is forwarded to `https://www.tbwlawfirm.com` by GoDaddy.
-- **Forms:** follow the ZINC forms protocol. Secrets (`RESEND_API_KEY`,
-  `FORM_NOTIFY_TO`, `FORM_NOTIFY_FROM`, `FORM_CONFIRM_FROM`) are encrypted
-  variables in the Pages dashboard; the D1 schema is in `migrations/`.
+  are untouched): an A record for `tbwlawfirm.com` and a CNAME for `www`,
+  both pointing at Vercel; Vercel redirects the bare domain to www.
+- **Forms:** ZINC forms protocol, "Standard" tier: each lead is emailed
+  through Resend before the visitor sees success; any failure shows the
+  error with the firm's phone number. No database. `RESEND_API_KEY`,
+  `FORM_NOTIFY_TO`, `FORM_NOTIFY_FROM` and `FORM_CONFIRM_FROM` are Vercel
+  environment variables (this repo is public).
 - **Blog:** git-based content — no database. `src/lib/blog.ts` serves
   `src/data/posts.json` plus `src/data/posts-archive.json` (six published
   posts that never appeared on the blog index; kept unlisted). Edit the JSON

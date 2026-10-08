@@ -1,19 +1,19 @@
 /**
- * Website forms — POST /api/forms (ZINC forms protocol:
- * ~/Projects/zinc-tooling/forms-protocol.md). Stores every submission in D1
- * first, then emails the firm via Resend, then optionally sends the visitor a
- * confirmation. Called from functions/api/forms.js.
+ * Website forms — POST /api/forms (ZINC forms protocol, "Standard" tier:
+ * ~/Projects/zinc-tooling/forms-protocol.md). Low volume, no database:
+ * the lead is emailed to the firm through Resend before the visitor gets an
+ * answer, and the visitor only sees success if that email was accepted.
+ * Any failure shows the error message with the firm's phone number, so a
+ * lead is never lost silently. Called from src/pages/api/forms.js.
  *
- * Configuration (Cloudflare Pages dashboard, encrypted — this repo is public):
+ * Configuration (Vercel project environment variables — this repo is public):
  *   RESEND_API_KEY     Resend API key
- *   FORM_NOTIFY_TO     comma-separated recipients
+ *   FORM_NOTIFY_TO     comma-separated recipients (at least two)
  *   FORM_NOTIFY_FROM   e.g. "TBW Law Website <website@tbwlawfirm.com>"
  *   FORM_CONFIRM_FROM  optional; when set, the visitor gets a confirmation
- *   DB                 D1 binding (wrangler.jsonc)
  */
 
 const MAX_BODY = 32 * 1024;
-const RATE_LIMIT = 10; // submissions per IP per 10 minutes
 const FIRM_CONTACT = 'call (949) 706-7100';
 const TRACKING_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'gbraid', 'wbraid', 'fbclid', 'ttclid'];
 // form field names -> labels in the notification email, in display order
@@ -53,23 +53,6 @@ export async function handleForm(request, env) {
   const name = [fields['First-Name'], fields['Last-Name']].filter(Boolean).join(' ');
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return reply(wantsJson, 400, 'Please enter a valid email address.');
 
-  if (!env.DB) {
-    console.error('forms: DB binding missing — submission not stored');
-    return reply(wantsJson, 503, `Our form is temporarily unavailable. Please ${FIRM_CONTACT}.`);
-  }
-
-  const ip = request.headers.get('CF-Connecting-IP') || '';
-  let recent;
-  try {
-    recent = await env.DB.prepare(
-      "SELECT COUNT(*) AS n FROM form_submissions WHERE ip = ?1 AND created_at > datetime('now', '-10 minutes')"
-    ).bind(ip).first();
-  } catch (e) {
-    console.error('forms: database unavailable', e);
-    return reply(wantsJson, 500, `Something went wrong. Please ${FIRM_CONTACT}.`);
-  }
-  if (recent && recent.n >= RATE_LIMIT) return reply(wantsJson, 429, `Too many submissions. Please ${FIRM_CONTACT}.`);
-
   let tracking = {};
   try {
     const t = JSON.parse(String(form.get('_tracking') || '{}'));
@@ -78,35 +61,22 @@ export async function handleForm(request, env) {
     tracking = {};
   }
 
-  const id = crypto.randomUUID();
-  const pageUrl = String(form.get('_page') || request.headers.get('Referer') || '').slice(0, 1000);
-  try {
-    await env.DB.prepare(
-      `INSERT INTO form_submissions
-         (id, form_name, email, name, fields, page_url, referrer, tracking, user_agent, country, ip, status)
-       VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, 'new')`
-    ).bind(
-      id, formName, email, name, JSON.stringify(fields), pageUrl,
-      String(form.get('_referrer') || '').slice(0, 1000), JSON.stringify(tracking),
-      (request.headers.get('User-Agent') || '').slice(0, 300), (request.cf && request.cf.country) || '', ip
-    ).run();
-  } catch (e) {
-    console.error('forms: store failed', e);
+  const submission = {
+    id: crypto.randomUUID(),
+    formName,
+    email,
+    name,
+    fields,
+    pageUrl: String(form.get('_page') || request.headers.get('Referer') || '').slice(0, 1000),
+    tracking
+  };
+
+  // the email IS the record: success only once Resend has accepted it
+  if (!(await sendNotification(env, submission))) {
     return reply(wantsJson, 500, `Something went wrong. Please ${FIRM_CONTACT}.`);
   }
-
-  // stored — from here on nothing can lose the lead; email failures are logged
-  const submission = { id, formName, email, name, fields, pageUrl, tracking };
-  try {
-    if (await sendNotification(env, submission)) {
-      await env.DB.prepare("UPDATE form_submissions SET notified_at = datetime('now') WHERE id = ?1").bind(id).run();
-    }
-    if (env.FORM_CONFIRM_FROM && formName === 'Contact' && (await sendConfirmation(env, submission))) {
-      await env.DB.prepare("UPDATE form_submissions SET confirmed_at = datetime('now') WHERE id = ?1").bind(id).run();
-    }
-  } catch (e) {
-    console.error(`forms: post-store step failed for submission ${id}`, e);
-  }
+  if (env.FORM_CONFIRM_FROM && formName === 'Contact') await sendConfirmation(env, submission);
+  console.log(`forms: ${formName} submission ${submission.id} delivered`);
   return reply(wantsJson, 200, 'ok');
 }
 
@@ -126,7 +96,7 @@ function reply(wantsJson, status, message) {
 async function sendNotification(env, s) {
   const to = (env.FORM_NOTIFY_TO || '').split(',').map((x) => x.trim()).filter(Boolean);
   if (!env.RESEND_API_KEY || !env.FORM_NOTIFY_FROM || !to.length) {
-    console.error(`forms: notification not configured — submission ${s.id} stored only`);
+    console.error(`forms: notification not configured — submission ${s.id} not delivered`);
     return false;
   }
   const rows = [];
@@ -191,4 +161,3 @@ async function resend(env, payload, id) {
 function escapeHtml(v) {
   return String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-
