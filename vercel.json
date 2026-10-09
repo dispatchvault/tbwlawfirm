@@ -7,14 +7,14 @@
   "trailingSlash": false,
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/:path(.*)",
       "has": [
         {
           "type": "host",
           "value": "tbwlawfirm.com"
         }
       ],
-      "destination": "https://www.tbwlawfirm.com/:path*",
+      "destination": "https://www.tbwlawfirm.com/:path",
       "permanent": true
     },
     {
