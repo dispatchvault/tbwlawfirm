@@ -6,17 +6,76 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "redirects": [
-    { "source": "/sitemap.xml", "destination": "/sitemap-index.xml", "permanent": true },
-    { "source": "/template-pages/:path*", "destination": "/", "permanent": true },
-    { "source": "/template-:slug", "destination": "/", "permanent": true },
-    { "source": "/get-started", "destination": "/contact-us", "permanent": true },
-    { "source": "/category/recent-news", "destination": "/blog?category=Recent+News", "permanent": true },
-    { "source": "/category/case-news", "destination": "/blog?category=Case+News", "permanent": true },
-    { "source": "/category/speaking-engagements", "destination": "/blog?category=Speaking+Engagements", "permanent": true },
-    { "source": "/category/events-sponsorship", "destination": "/blog?category=Events+%26+Sponsorship", "permanent": true },
-    { "source": "/category/education", "destination": "/blog?category=Education", "permanent": true },
-    { "source": "/category/videos", "destination": "/blog?category=Videos", "permanent": true },
-    { "source": "/category/:path*", "destination": "/blog", "permanent": true },
-    { "source": "/post/:slug*", "destination": "/blog/:slug*", "permanent": true }
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "tbwlawfirm.com"
+        }
+      ],
+      "destination": "https://www.tbwlawfirm.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/sitemap-index.xml",
+      "permanent": true
+    },
+    {
+      "source": "/template-pages/:path*",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/template-:slug",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/get-started",
+      "destination": "/contact-us",
+      "permanent": true
+    },
+    {
+      "source": "/category/recent-news",
+      "destination": "/blog?category=Recent+News",
+      "permanent": true
+    },
+    {
+      "source": "/category/case-news",
+      "destination": "/blog?category=Case+News",
+      "permanent": true
+    },
+    {
+      "source": "/category/speaking-engagements",
+      "destination": "/blog?category=Speaking+Engagements",
+      "permanent": true
+    },
+    {
+      "source": "/category/events-sponsorship",
+      "destination": "/blog?category=Events+%26+Sponsorship",
+      "permanent": true
+    },
+    {
+      "source": "/category/education",
+      "destination": "/blog?category=Education",
+      "permanent": true
+    },
+    {
+      "source": "/category/videos",
+      "destination": "/blog?category=Videos",
+      "permanent": true
+    },
+    {
+      "source": "/category/:path*",
+      "destination": "/blog",
+      "permanent": true
+    },
+    {
+      "source": "/post/:slug*",
+      "destination": "/blog/:slug*",
+      "permanent": true
+    }
   ]
 }
